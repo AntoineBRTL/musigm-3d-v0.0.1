@@ -30,9 +30,9 @@ Main.js:
 // these are the imports, vscode is making them by default so you don't have to worry about them :D
 import { Scene } from "musigm-3d-v0.0.1/src/js/core/Scene.js";
 import { Camera } from "musigm-3d-v0.0.1/src/js/core/Camera.js";
+import { GameObject } from "musigm-3d-v0.0.1/src/js/core/GameObject.js";
 import { Material } from "musigm-3d-v0.0.1/src/js/core/component/Material.js";
 import { Mesh } from "musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
-import { GameObject } from "musigm-3d-v0.0.1/src/js/core/GameObject.js";
 
 export class Main{
     /**
