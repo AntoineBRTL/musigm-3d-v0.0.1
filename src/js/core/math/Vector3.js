@@ -87,7 +87,8 @@ export class Vector3{
         return new Vector3(
             this.y * vector.z - this.z * vector.y, 
             this.z * vector.x - this.x * vector.z,
-            this.x * vector.y - this.y * vector.x);
+            this.x * vector.y - this.y * vector.x
+        );
     }
 
     /**

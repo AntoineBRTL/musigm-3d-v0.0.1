@@ -149,7 +149,7 @@ export class Camera extends GameObject{
 
             // fill vertex shader attributes & uniforms
             // default attribute(s)
-            this.fillShaderAttribute(mesh.vertexShaderAttributeCoordinatesName, new Float32Array(mesh.vertices), 3, program);
+            this.fillShaderAttribute("coordinates", new Float32Array(mesh.vertices), 3, program);
 
             mesh.vertexShaderAttributes.forEach(function(element){
                 this.fillShaderAttribute(element.attribute, element.value, element.dimension, program);
