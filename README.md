@@ -12,20 +12,20 @@ Musigm is a 3D game engine exactly like THREE.js, but it's mine so it's better ;
 ### How to use musigm-js ? ###
 Let's start doing our shit !
 
-Create a simple html file and a js file :
+Create a simple .html file and a .js file :
 
 index.html:
 ```html
 <script type='module'>
     <!-- our code should be here -->
-    <!-- but because I m not a noob, let's create an other file -->
+    <!-- but because I'm not a noob, let's create an other file -->
 </script>
 ```
 
 Main.js:
 ```javascript
 // this is the best part ! 
-// Start by creating your Main class like this :
+// start by creating your Main class like this :
 
 // these are the imports, vscode is making them by default so you don't have to worry about them :D
 import { Scene } from "musigm-3d-v0.0.1/src/js/core/Scene.js";
