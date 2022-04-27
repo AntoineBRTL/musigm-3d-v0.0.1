@@ -59,17 +59,6 @@ export class Camera extends GameObject{
         );
     }
 
-    get viewMatrix() {
-        const transformationMatrix = new Matrix4().identity();
-        transformationMatrix.rotate(transformationMatrix, this.rotation.x * (Math.PI / 180), new Vector3(1, 0, 0));
-        transformationMatrix.rotate(transformationMatrix, this.rotation.y * (Math.PI / 180), new Vector3(0, 1, 0));
-        transformationMatrix.rotate(transformationMatrix, this.rotation.z * (Math.PI / 180), new Vector3(0, 0, 1));
-        transformationMatrix.scale(this.scale);
-        transformationMatrix.translate(this.position);
-
-        return transformationMatrix;
-    }
-
     /**
      * Initalize a new camera
      */
@@ -157,7 +146,7 @@ export class Camera extends GameObject{
 
             // default uniform(s)
             this.fillShaderUniform(mesh.vertexShaderUniformWorldMatrixName, new Float32Array(gameObject.transform), 4, program);
-            this.fillShaderUniform(mesh.vertexShaderUniformViewMatrixName, new Float32Array(this.viewMatrix), 4, program);
+            this.fillShaderUniform(mesh.vertexShaderUniformViewMatrixName, new Float32Array(this.transform), 4, program);
             this.fillShaderUniform(mesh.vertexShaderUniformProjectionMatrixName, new Float32Array(this.projectionMatrix), 4, program);
 
             mesh.vertexShaderUniforms.forEach(function(element){

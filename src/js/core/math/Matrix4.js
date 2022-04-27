@@ -2,18 +2,51 @@ import { Vector3 } from "./Vector3.js";
 
 /**
  * @extends {Array<number>}
- * 
- * This is not 100% my code, it use the lib gl-matrix.js
- * 
  */
 export class Matrix4 extends Array{
     constructor(){
         super();
 
         this.length = 16;
+
+        this.identity();
     }
 
+    /**
+     * Identity version of this matrix
+     */
+    get identity(){
+        const Im = new Matrix4();
+
+        Im[0] = 1;
+        Im[1] = 0;
+        Im[2] = 0;
+        Im[3] = 0;
+
+        Im[4] = 0;
+        Im[5] = 1;
+        Im[6] = 0;
+        Im[7] = 0;
+
+        Im[8] = 0; 
+        Im[9] = 0;
+        Im[10] = 1;
+        Im[11] = 0;
+
+        Im[12] = 0;
+        Im[13] = 0;
+        Im[14] = 0;
+        Im[15] = 1;
+
+        return Im;
+    }
+
+    /**
+     * Do not use this, it may broke everything, use Matrix4.identity instead.
+     * @returns 
+     */
     identity(){
+
         this[0] = 1;
         this[1] = 0;
         this[2] = 0;
@@ -38,254 +71,164 @@ export class Matrix4 extends Array{
     }
 
     /**
-     * Rotates a mat4 by the given angle around the given axis
-     *
-     * @param {Matrix4} a the matrix to rotate
-     * @param {Number} rad the angle to rotate the matrix by
-     * @param {Vector3} axis the axis to rotate around
-     * @returns {Matrix4}
+     * Rotation matrix
+     * @param {Vector3} vector 
      */
-    rotate(a, rad, axis) {
-        let x = axis.x;
-        let y = axis.y;
-        let z = axis.z;
+    rotated(vector) {
+        const Rx = new Matrix4();
+        Rx[ 5 ] = Math.cos(vector.x * Math.PI / 180);
+        Rx[ 6 ] = -Math.sin(vector.x * Math.PI / 180);
+        Rx[ 9 ] = Math.sin(vector.x * Math.PI / 180);
+        Rx[10 ] = Math.cos(vector.x * Math.PI / 180);
 
-        let len = Math.hypot(x, y, z);
+        const Ry = new Matrix4();
+        Ry[ 0 ] = Math.cos(vector.y * Math.PI / 180);
+        Ry[ 2 ] = Math.sin(vector.y * Math.PI / 180);
+        Ry[ 8 ] = -Math.sin(vector.y * Math.PI / 180);
+        Ry[10 ] = Math.cos(vector.y * Math.PI / 180);
 
-        let s, c, t;
+        const Rz = new Matrix4();
+        Rz[ 0 ] = Math.cos(vector.z * Math.PI / 180);
+        Rz[ 1 ] = -Math.sin(vector.z * Math.PI / 180);
+        Rz[ 4 ] = Math.sin(vector.z * Math.PI / 180);
+        Rz[ 5 ] = Math.cos(vector.z * Math.PI / 180);
 
-        let a00, a01, a02, a03;
-        let a10, a11, a12, a13;
-        let a20, a21, a22, a23;
+        const Rm = this.product(Rx).product(Ry).product(Rz);
+        //Rm[0] = this[0];
+        //Rm[1] = this[1];
+        //Rm[2] = this[2];
+        Rm[3] = this[3];
+        //Rm[4] = this[4];
+        //Rm[5] = this[5];
+        //Rm[6] = this[6];
+        Rm[7] = this[7];
+        //Rm[8] = this[8];
+        //Rm[9] = this[9];
+        //Rm[10] = this[10];
+        Rm[11] = this[11];
+        Rm[12] = this[12];
+        Rm[13] = this[13];
+        Rm[14] = this[14];
+        Rm[15] = this[15];
 
-        let b00, b01, b02;
-        let b10, b11, b12;
-        let b20, b21, b22;
-    
-        if (len < 0.000001) {
-            return null;
-        }
-    
-        len = 1 / len;
-        x *= len;
-        y *= len;
-        z *= len;
-    
-        s = Math.sin(rad);
-        c = Math.cos(rad);
-        t = 1 - c;
-    
-        a00 = a[0];
-        a01 = a[1];
-        a02 = a[2];
-        a03 = a[3];
-        a10 = a[4];
-        a11 = a[5];
-        a12 = a[6];
-        a13 = a[7];
-        a20 = a[8];
-        a21 = a[9];
-        a22 = a[10];
-        a23 = a[11];
-    
-        // Construct the elements of the rotation matrix
-        b00 = x * x * t + c;
-        b01 = y * x * t + z * s;
-        b02 = z * x * t - y * s;
-        b10 = x * y * t - z * s;
-        b11 = y * y * t + c;
-        b12 = z * y * t + x * s;
-        b20 = x * z * t + y * s;
-        b21 = y * z * t - x * s;
-        b22 = z * z * t + c;
-    
-        // Perform rotation-specific matrix multiplication
-        this[0] = a00 * b00 + a10 * b01 + a20 * b02;
-        this[1] = a01 * b00 + a11 * b01 + a21 * b02;
-        this[2] = a02 * b00 + a12 * b01 + a22 * b02;
-        this[3] = a03 * b00 + a13 * b01 + a23 * b02;
-        this[4] = a00 * b10 + a10 * b11 + a20 * b12;
-        this[5] = a01 * b10 + a11 * b11 + a21 * b12;
-        this[6] = a02 * b10 + a12 * b11 + a22 * b12;
-        this[7] = a03 * b10 + a13 * b11 + a23 * b12;
-        this[8] = a00 * b20 + a10 * b21 + a20 * b22;
-        this[9] = a01 * b20 + a11 * b21 + a21 * b22;
-        this[10] = a02 * b20 + a12 * b21 + a22 * b22;
-        this[11] = a03 * b20 + a13 * b21 + a23 * b22;
-    
-        if (a !== this) {
-            // If the source and destination differ, copy the unchanged last row
-            this[12] = a[12];
-            this[13] = a[13];
-            this[14] = a[14];
-            this[15] = a[15];
-        }
-
-        return this;
+        // multiply the 3 matrix
+        return Rm;
     }
 
     /**
-	 * Generates a perspective projection matrix with the given bounds
-	 *
-	 * @param {number} fovy Vertical field of view in radians
-	 * @param {number} aspect Aspect ratio. typically viewport width/height
-	 * @param {number} near Near bound of the frustum
-	 * @param {number} far Far bound of the frustum
-	 * @returns {Matrix4} out
+     * Scaling matrix
+     * @param {Vector3} vector 
+     */
+    scaled(vector) {
+        const Sm = new Matrix4();
+        Sm[0] = this[0] * vector.x;
+        Sm[1] = this[1] * vector.x;
+        Sm[2] = this[2] * vector.x;
+        Sm[3] = this[3] * vector.x;
+        Sm[4] = this[4] * vector.y;
+        Sm[5] = this[5] * vector.y;
+        Sm[6] = this[6] * vector.y;
+        Sm[7] = this[7] * vector.y;
+        Sm[8] = this[8] * vector.z;
+        Sm[9] = this[9] * vector.z;
+        Sm[10] = this[10] * vector.z;
+        Sm[11] = this[11] * vector.z;
+        Sm[12] = this[12];
+        Sm[13] = this[13];
+        Sm[14] = this[14];
+        Sm[15] = this[15];
+
+        return Sm;
+    }
+
+    /**
+     * Translating matrix
+     * @param {Vector3} vector 
+     */
+    translated(vector){
+        const Tm = new Matrix4();
+        Tm[0] = this[0];
+        Tm[1] = this[1];
+        Tm[2] = this[2];
+        Tm[3] = this[3];
+        Tm[4] = this[4];
+        Tm[5] = this[5];
+        Tm[6] = this[6];
+        Tm[7] = this[7];
+        Tm[8] = this[8];
+        Tm[9] = this[9];
+        Tm[10] = this[10];
+        Tm[11] = this[11];
+        Tm[12] = this[0] * vector.x + this[4] * vector.y + this[8] * vector.z + this[12];
+        Tm[13] = this[1] * vector.x + this[5] * vector.y + this[9] * vector.z + this[13];
+        Tm[14] = this[2] * vector.x + this[6] * vector.y + this[10] * vector.z + this[14];
+        Tm[15] = this[3] * vector.x + this[7] * vector.y + this[11] * vector.z + this[15];
+
+        return Tm;
+    }
+
+    /**
+     * 
+     * @param {Matrix4} matrix 
+     */
+    product(matrix){
+
+        const productMatrix = new Matrix4();
+        productMatrix.identity();
+        
+        productMatrix[0] = this[0] * matrix[0] + this[1] * matrix[4] + this[2] * matrix[8] + this[3] * matrix[12];
+        productMatrix[1] = this[0] * matrix[1] + this[1] * matrix[5] + this[2] * matrix[9] + this[3] * matrix[13];
+        productMatrix[2] = this[0] * matrix[2] + this[1] * matrix[6] + this[2] * matrix[10] + this[3] * matrix[14];
+        productMatrix[3] = this[0] * matrix[3] + this[1] * matrix[7] + this[2] * matrix[11] + this[3] * matrix[15];
+
+        productMatrix[4] = this[4] * matrix[0] + this[5] * matrix[4] + this[6] * matrix[8] + this[7] * matrix[12];
+        productMatrix[5] = this[4] * matrix[1] + this[5] * matrix[5] + this[6] * matrix[9] + this[7] * matrix[13];
+        productMatrix[6] = this[4] * matrix[2] + this[5] * matrix[6] + this[6] * matrix[10] + this[7] * matrix[14];
+        productMatrix[7] = this[4] * matrix[3] + this[5] * matrix[7] + this[6] * matrix[11] + this[7] * matrix[15];
+
+        productMatrix[8] = this[8] * matrix[0] + this[9] * matrix[4] + this[10] * matrix[8] + this[11] * matrix[12];
+        productMatrix[9] = this[8] * matrix[1] + this[9] * matrix[5] + this[10] * matrix[9] + this[11] * matrix[13];
+        productMatrix[10] = this[8] * matrix[2] + this[9] * matrix[6] + this[10] * matrix[10] + this[11] * matrix[14];
+        productMatrix[11] = this[8] * matrix[3] + this[9] * matrix[7] + this[10] * matrix[11] + this[11] * matrix[15];
+
+        productMatrix[12] = this[12] * matrix[0] + this[13] * matrix[4] + this[14] * matrix[8] + this[15] * matrix[12];
+        productMatrix[13] = this[12] * matrix[1] + this[13] * matrix[5] + this[14] * matrix[9] + this[15] * matrix[13];
+        productMatrix[14] = this[12] * matrix[2] + this[13] * matrix[6] + this[14] * matrix[10] + this[15] * matrix[14];
+        productMatrix[15] = this[12] * matrix[3] + this[13] * matrix[7] + this[14] * matrix[11] + this[15] * matrix[15];
+
+        return productMatrix;
+    }
+
+    /**
+	 * Perspective projection matrix
+	 * @param {number} fovy 
+	 * @param {number} aspect 
+	 * @param {number} near 
+	 * @param {number} far 
 	 */
 	perspective(fovy, aspect, near, far) {
+        const Pm = new Matrix4();
+
 	    let f = 1.0 / Math.tan(fovy / 2)
-	    let nf = 1 / (near - far);
+	    let nf = 1.0 / (near - far);
 
-	    this[0] = f / aspect;
-	    this[1] = 0;
-	    this[2] = 0;
-	    this[3] = 0;
-	    this[4] = 0;
-	    this[5] = f;
-	    this[6] = 0;
-	    this[7] = 0;
-	    this[8] = 0;
-	    this[9] = 0;
-	    this[10] = (far + near) * nf;
-	    this[11] = -1;
-	    this[12] = 0;
-	    this[13] = 0;
-	    this[14] = (2 * far * near) * nf;
-	    this[15] = 0;
+	    Pm[0] = f / aspect;
+	    Pm[1] = 0;
+	    Pm[2] = 0;
+	    Pm[3] = 0;
+	    Pm[4] = 0;
+	    Pm[5] = f;
+	    Pm[6] = 0;
+	    Pm[7] = 0;
+	    Pm[8] = 0;
+	    Pm[9] = 0;
+	    Pm[10] = (far + near) * nf;
+	    Pm[11] = -1;
+	    Pm[12] = 0;
+	    Pm[13] = 0;
+	    Pm[14] = (2 * far * near) * nf;
+	    Pm[15] = 0;
 
-	    return this;
+	    return Pm;
 	}
-
-    /**
-	 * Generates a look-at matrix with the given eye position, focal point, and up axis
-	 *
-	 * @param {Vector3} eye Position of the viewer
-	 * @param {Vector3} center Point the viewer is looking at
-	 * @param {Vector3} up vec3 pointing up
-	 * @returns {Matrix4} out
-	 */
-	lookAt(eye, center, up) {
-	    let x0, x1, x2, y0, y1, y2, z0, z1, z2, len,
-	        eyex = eye.x,
-	        eyey = eye.y,
-	        eyez = eye.z,
-	        upx = up.x,
-	        upy = up.y,
-	        upz = up.z,
-	        centerx = center.x,
-	        centery = center.y,
-	        centerz = center.z;
-
-	    if (Math.abs(eyex - centerx) < 0.000001 &&
-	        Math.abs(eyey - centery) < 0.000001 &&
-	        Math.abs(eyez - centerz) < 0.000001) {
-
-	        return this.identity();
-	    }
-
-	    z0 = eyex - centerx;
-	    z1 = eyey - centery;
-	    z2 = eyez - centerz;
-
-	    len = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
-	    z0 *= len;
-	    z1 *= len;
-	    z2 *= len;
-
-	    x0 = upy * z2 - upz * z1;
-	    x1 = upz * z0 - upx * z2;
-	    x2 = upx * z1 - upy * z0;
-	    len = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
-	    if (!len) {
-	        x0 = 0;
-	        x1 = 0;
-	        x2 = 0;
-	    } else {
-	        len = 1 / len;
-	        x0 *= len;
-	        x1 *= len;
-	        x2 *= len;
-	    }
-
-	    y0 = z1 * x2 - z2 * x1;
-	    y1 = z2 * x0 - z0 * x2;
-	    y2 = z0 * x1 - z1 * x0;
-
-	    len = Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
-	    if (!len) {
-	        y0 = 0;
-	        y1 = 0;
-	        y2 = 0;
-	    } else {
-	        len = 1 / len;
-	        y0 *= len;
-	        y1 *= len;
-	        y2 *= len;
-	    }
-
-	    this[0] = x0;
-	    this[1] = y0;
-	    this[2] = z0;
-	    this[3] = 0;
-	    this[4] = x1;
-	    this[5] = y1;
-	    this[6] = z1;
-	    this[7] = 0;
-	    this[8] = x2;
-	    this[9] = y2;
-	    this[10] = z2;
-	    this[11] = 0;
-	    this[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
-	    this[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
-	    this[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
-	    this[15] = 1;
-
-	    return this;
-	}
-
-    /**
-     * Translate a mat4 by the given vector
-     * @param {Vector3} vector vector to translate by
-     * @returns {Matrix4} out
-     */
-    translate(vector) {
-        let x = vector.x;
-        let y = vector.y;
-        let z = vector.z;
-    
-        this[12] = this[0] * x + this[4] * y + this[8] * z + this[12];
-        this[13] = this[1] * x + this[5] * y + this[9] * z + this[13];
-        this[14] = this[2] * x + this[6] * y + this[10] * z + this[14];
-        this[15] = this[3] * x + this[7] * y + this[11] * z + this[15];
-    
-        return this;
-    }
-
-    /**
-     * Scales the mat4 by the dimensions in the given vec3 not using vectorization
-     *
-     * @param {Vector3} vector the vec3 to scale the matrix by
-     * @returns {Matrix4} out
-     **/
-    scale(vector) {
-        let x = vector.x;
-        let y = vector.y;
-        let z = vector.z;
-    
-        this[0] *= x;
-        this[1] *= x;
-        this[2] *= x;
-        this[3] *= x;
-        this[4] *= y;
-        this[5] *= y;
-        this[6] *= y;
-        this[7] *= y;
-        this[8] *= z;
-        this[9] *= z;
-        this[10] *= z;
-        this[11] *= z;
-
-        return this;
-    }
 }
