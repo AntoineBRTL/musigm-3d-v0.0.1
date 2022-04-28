@@ -58,8 +58,7 @@ export class GameObject{
      * @return {Matrix3} Transformation matrix
      */
     get transform() {
-        const transformationMatrix = new Matrix4().translated(this.position).rotated(this.rotation).scaled(this.scale);
-
+        const transformationMatrix = new Matrix4().scaled(this.scale).rotated(this.rotation).translated(this.position);
         return transformationMatrix;
     }
 
@@ -69,10 +68,10 @@ export class GameObject{
      */
     get forward(){
         return new Vector3(
-            Math.cos(this.rotation.z * Math.PI / 180) * Math.sin(-this.rotation.y * Math.PI / 180),
-            Math.sin(this.rotation.z * Math.PI / 180),
-            Math.cos(this.rotation.z * Math.PI / 180) * Math.cos(-this.rotation.y * Math.PI / 180) 
-        ).normalized;
+            Math.cos(this.rotation.z * Math.PI / 180) * Math.sin(this.rotation.y * Math.PI / 180),
+            -Math.sin(this.rotation.z * Math.PI / 180),
+            Math.cos(this.rotation.z * Math.PI / 180) * Math.cos(this.rotation.y * Math.PI / 180) 
+        );
     }
 
     /**
@@ -81,10 +80,10 @@ export class GameObject{
      */
     get right(){
         return new Vector3(
-            Math.cos(-this.rotation.y * Math.PI / 180),
+            Math.cos(this.rotation.y * Math.PI / 180),
             0,
-            -Math.sin(-this.rotation.y * Math.PI / 180)
-        ).scaled(-1.0).normalized;
+            -Math.sin(this.rotation.y * Math.PI / 180)
+        ).scaled(-1.0);
     }
 
     /**

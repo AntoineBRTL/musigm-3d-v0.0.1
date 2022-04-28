@@ -1,3 +1,6 @@
+import { Vector3 } from "../math/Vector3.js";
+import { initEvent } from "./Event.js";
+
 export class Input{
 
     /**
@@ -9,6 +12,11 @@ export class Input{
      * @type {Array}
      */
     static KEY_DOWN = new Array();
+
+    /**
+     * @type {Vector3}
+     */
+    static MOUSE_MOVEMENT = new Vector3();
 
     /**
      * @type {Array}
@@ -25,6 +33,19 @@ export class Input{
 
     static getKeyUp(keyValue){
         return hasValue(Input.KEY_UP, keyValue);
+    }
+
+    /**
+     * @param {String} axisName 
+     */
+    static getAxis(axisName){
+        if(axisName == "MouseX"){
+            return Input.MOUSE_MOVEMENT.x;
+        }
+
+        if(axisName == "MouseY"){
+            return Input.MOUSE_MOVEMENT.y;
+        }
     }
 
     /**
@@ -79,6 +100,8 @@ export class Input{
         Input.removeAll(Input.KEY_UP);
     }
 }
+
+initEvent();
 
 function hasValue(array, value){
     for(let i = 0; i < array.length; i++){

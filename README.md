@@ -74,8 +74,87 @@ export class Main{
 }
 
 ```
+
 #### Output ####
 ![alt text](demo.PNG)
+
+### FPS Demo ###
+
+Main.js:
+```javascript
+import { Scene } from "musigm-3d-v0.0.1/src/js/core/Scene.js";
+import { Camera } from "musigm-3d-v0.0.1/src/js/core/Camera.js";
+import { Material } from "musigm-3d-v0.0.1/src/js/core/component/Material.js";
+import { Mesh } from "musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
+import { GameObject } from "musigm-3d-v0.0.1/src/js/core/GameObject.js";
+import { Input } from "musigm-3d-v0.0.1/src/js/core/tool/Input.js";
+
+export class Main{
+    constructor(){
+        // scene
+        const scene = new Scene();
+
+        // camera
+        const camera = new Camera();
+
+        // gameObjects
+        let myObject = new GameObject();
+        scene.add(myObject);
+
+        // mesh + material
+        let myMesh = myObject.addComponent(Mesh);
+        let myMaterial = myObject.addComponent(Material);
+
+        // transformations
+        camera.position.z = -10;
+        /*myObject.rotation.y = 45;
+        myObject.rotation.x = 45;*/
+
+        // mouse event 
+        // NB: the Input class does not support mouse events yet
+        // Camera.lockCursor() take 1 argument which is the callback when the cursor is locked
+        camera.lockCursor(function(){
+            window.addEventListener("mousemove", function(event){
+                camera.rotation.y -= event.movementX * 0.1;
+                camera.rotation.x -= event.movementY * 0.1;
+            });
+        });
+        
+        const speed = 0.1;
+
+        function loop() {
+
+            myObject.rotation.y += 0.5;
+            myObject.rotation.x += 0.5;
+
+            // keyboard controls
+            if(Input.getKeyPress("z")){
+                camera.position = camera.position.added(camera.forward.scaled(speed));
+            }
+
+            if(Input.getKeyPress("s")){
+                camera.position = camera.position.added(camera.forward.scaled(-speed));
+            }
+
+            if(Input.getKeyPress("d")){
+                camera.position = camera.position.added(camera.right.scaled(speed));
+            }
+
+            if(Input.getKeyPress("q")){
+                camera.position = camera.position.added(camera.right.scaled(-speed));
+            }
+
+            camera.render(scene);
+
+            requestAnimationFrame(loop.bind(this));
+        }
+        loop();
+    }
+}
+
+new Main();
+
+```
 
 ### Advices ###
 I strongly recommends you to use musigm to create small games for now, I'm still a beginner so my code is not 100% perfect and if something is marked as deprecaded, do not use it !

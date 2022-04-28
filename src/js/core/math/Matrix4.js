@@ -93,7 +93,8 @@ export class Matrix4 extends Array{
         Rz[ 4 ] = Math.sin(vector.z * Math.PI / 180);
         Rz[ 5 ] = Math.cos(vector.z * Math.PI / 180);
 
-        const Rm = this.product(Rx).product(Ry).product(Rz);
+        const Rm = this.product(Rz).product(Ry).product(Rx);
+        // -> used by rotation
         //Rm[0] = this[0];
         //Rm[1] = this[1];
         //Rm[2] = this[2];

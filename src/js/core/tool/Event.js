@@ -22,5 +22,25 @@ export function initEvent(){
 
         return;
     });
+    
+    let moved = false;
 
+    window.addEventListener("mousemove", function(event){
+        moved = true;
+        Input.MOUSE_MOVEMENT.x = event.movementX;
+        Input.MOUSE_MOVEMENT.y = event.movementY;
+    });
+
+    movement();
+    function movement(){
+        if(!moved){
+            Input.MOUSE_MOVEMENT.x = 0;
+            Input.MOUSE_MOVEMENT.y = 0;
+        }
+        
+        moved = false;
+
+        requestAnimationFrame(movement);
+ 
+    }
 }

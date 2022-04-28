@@ -65,6 +65,17 @@ export class Camera extends GameObject{
     }
 
     /**
+     * lock the user cursor using the click event
+     * @param {Function} callback 
+     */
+    lockCursor(callback){
+        window.addEventListener("click", function(e){
+            this.canvas.requestPointerLock();
+            callback();
+        }.bind(this));
+    }
+
+    /**
      * Initalize a new camera
      */
     init() {
