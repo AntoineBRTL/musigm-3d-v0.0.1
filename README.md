@@ -107,8 +107,8 @@ export class Main{
 
         // transformations
         camera.position.z = -10;
-        /*myObject.rotation.y = 45;
-        myObject.rotation.x = 45;*/
+        myObject.rotation.y = 45;
+        myObject.rotation.x = 45;
 
         // mouse event 
         // NB: the Input class does not support mouse events yet
