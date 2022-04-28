@@ -153,7 +153,6 @@ export class Main{
 }
 
 new Main();
-
 ```
 
 ### Advices ###
