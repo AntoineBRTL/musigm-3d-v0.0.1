@@ -46,23 +46,23 @@ export class Main{
         const camera = new Camera();
 
         // create a gameObjects & add it the scene
-        let myObject = new GameObject();
-        scene.add(myObject);
+        let myCube = new GameObject();
+        scene.add(myCube);
 
         // add him a mesh and a material so we can render it
-        let myMesh = myObject.addComponent(Mesh);
-        let myMaterial = myObject.addComponent(Material);
+        let myMesh = myCube.addComponent(Mesh);
+        let myMaterial = myCube.addComponent(Material);
 
         // apply shitty transformations to the object ahha
         camera.position.z = -10;
-        myObject.rotation.y = 45;
-        myObject.rotation.x = 45;
+        myCube.rotation.y = 45;
+        myCube.rotation.x = 45;
         
         function loop() {
 
             // other transformations so it looks nice 
-            myObject.rotation.y += 0.5;
-            myObject.rotation.x += 0.5;
+            myCube.rotation.y += 0.5;
+            myCube.rotation.x += 0.5;
 
             // ask the camera to render the scene
             camera.render(scene);
