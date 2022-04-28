@@ -1,11 +1,11 @@
-import { DEFAULT_FRAGMENT__SHADER_SOURCE } from "../Constant.js";
+import { DEFAULT_FRAGMENT_SHADER_SOURCE } from "../Constant.js";
 import { Component } from "./Component.js";
 
 export class Material extends Component {
     constructor(){
         super();
 
-        this.fragmentShaderSource = DEFAULT_FRAGMENT__SHADER_SOURCE;
+        this.fragmentShaderSource = DEFAULT_FRAGMENT_SHADER_SOURCE;
 
         /**
          * @type {Array<Object>}

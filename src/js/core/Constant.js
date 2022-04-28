@@ -17,7 +17,7 @@ export const DEFAULT_VERTEX_SHADER_SOURCE = [
 '}'
 ].join('\n');
 
-export const DEFAULT_FRAGMENT__SHADER_SOURCE = [
+export const DEFAULT_FRAGMENT_SHADER_SOURCE = [
 'precision mediump float;',
 'uniform vec2 resolution;',
 '',
