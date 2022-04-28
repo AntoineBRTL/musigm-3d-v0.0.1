@@ -5,9 +5,17 @@ import { Vector3 } from "./math/Vector3.js";
 /// COMPONENTS ///
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
+import { Scene } from "./Scene.js";
 
 export class GameObject{
-    constructor(){
+    /**
+     * 
+     * @param {Object} args 
+     */
+    constructor(args){
+        if(!args){
+            args = new Object();
+        }
 
         /**
          * @type {Array<Component>}
@@ -17,17 +25,32 @@ export class GameObject{
         /**
          * @type {Vector3}
          */
-        this.position = new Vector3();
+        this.position = new Vector3() || args.position;
 
         /**
          * @type {Vector3}
          */
-        this.rotation = new Vector3();
+        this.rotation = new Vector3() || args.rotation;
 
         /**
          * @type {Vector3}
          */
-        this.scale = new Vector3(1, 1, 1);
+        this.scale = new Vector3(1, 1, 1) || args.scale;
+
+        /**
+         * @type {String}
+         */
+        this.name = "new GameObject" || args.name;
+
+        /**
+         * @type {String}
+         */
+        this.tag = "default" || args.tag;
+
+        /**
+         * @type {String}
+         */
+        this.layer = "default" || args.layer;
     }
 
     /**
@@ -124,5 +147,49 @@ export class GameObject{
         }, this);
 
         return has;
+    }
+
+    /**
+     * Get all the gameObjects with the given tag
+     * @param {String} tag 
+     * @param {Scene} scene 
+     * @return {Array<GameObject>} 
+     */
+    static findGameObjectsWithTagInScene(tag, scene) {
+
+        /**
+         * @type {Array<GameObject>}
+         */
+        const gameObjects = new Array();
+
+        scene.content.forEach(function(gameObject) {
+            if(gameObject.tag == tag){
+                gameObjects.push(gameObject);
+            }
+        });
+
+        return gameObjects;
+    }
+
+    /**
+     * Get all the gameObjects with the given name
+     * @param {String} name 
+     * @param {Scene} scene 
+     * @return {Array<GameObject>} 
+     */
+    static findGameObjectsWithNameInScene(name, scene) {
+
+        /**
+         * @type {Array<GameObject>}
+         */
+        const gameObjects = new Array();
+
+        scene.content.forEach(function(gameObject) {
+            if(gameObject.name == name){
+                gameObjects.push(gameObject);
+            }
+        });
+
+        return gameObjects;
     }
 }

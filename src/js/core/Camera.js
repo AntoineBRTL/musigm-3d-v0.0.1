@@ -10,7 +10,12 @@ export class Camera extends GameObject{
     /**
      * Web-gl camera
      */
-    constructor(){
+     constructor(args){
+
+        if(!args){
+            args = new Object();
+        }
+
         super();
 
         /**
@@ -26,7 +31,7 @@ export class Camera extends GameObject{
         /**
          * @type {Array<number>}
          */
-        this.clearColor = [0.0, 0.0, 0.0, 1.0];
+        this.clearColor = [0.0, 0.0, 0.0, 1.0] || args.clearColor;
 
         /**
          * @type {Array<Object>}
@@ -36,7 +41,7 @@ export class Camera extends GameObject{
         /**
          * @type {number}
          */
-        this.fov = 60;
+        this.fov = 60 || args.fov;
 
         /**
          * @type {Function}
