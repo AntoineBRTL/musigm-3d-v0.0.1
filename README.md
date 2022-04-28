@@ -115,8 +115,8 @@ export class Main{
         // Camera.lockCursor() take 1 argument which is the callback when the cursor is locked
         camera.lockCursor(function(){
             window.addEventListener("mousemove", function(event){
-                camera.rotation.y -= event.movementX * 0.1;
-                camera.rotation.x -= event.movementY * 0.1;
+                camera.rotation.y += event.movementX * 0.1;
+                camera.rotation.x += event.movementY * 0.1;
             });
         });
         

@@ -213,12 +213,12 @@ export class Matrix4 extends Array{
 	    let f = 1.0 / Math.tan(fovy / 2)
 	    let nf = 1.0 / (near - far);
 
-	    Pm[0] = f / aspect;
+	    Pm[0] = -f / aspect;
 	    Pm[1] = 0;
 	    Pm[2] = 0;
 	    Pm[3] = 0;
 	    Pm[4] = 0;
-	    Pm[5] = f;
+	    Pm[5] = -f;
 	    Pm[6] = 0;
 	    Pm[7] = 0;
 	    Pm[8] = 0;

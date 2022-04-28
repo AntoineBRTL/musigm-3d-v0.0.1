@@ -83,7 +83,7 @@ export class GameObject{
             Math.cos(this.rotation.y * Math.PI / 180),
             0,
             -Math.sin(this.rotation.y * Math.PI / 180)
-        ).scaled(-1.0);
+        );
     }
 
     /**
