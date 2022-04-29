@@ -13,6 +13,11 @@ export class Mesh extends Component{
         this.vertices = CUBE_MESH;
 
         /**
+         * @type {number}
+         */
+        this.dimension = 3;
+
+        /**
          * @type {Array<Object>}
          */
         this.vertexShaderAttributes = new Array();

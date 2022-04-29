@@ -182,7 +182,7 @@ export class Camera extends GameObject{
             }, this);
 
             // draw
-            this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, mesh.vertices.length);
+            this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, mesh.vertices.length / mesh.dimension /** Merci à mon frère Pierru-sama pour ton aide sur ceci :D */);
 
         }, this);
     }
