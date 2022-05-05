@@ -165,5 +165,5 @@ For those who are interested hehe, I'm working a lot on the default shaders, I m
 
 ![alt text](./images/patch02.gif)
 
-I'm getting this light effect by calculating the dot product between the vector light to face and normals from this same faces.
+I'm getting this light effect by calculating the dot product between the vector light to face and the normal from this same faces.
 The problem I have is that my normals are not well calculated so the result is not really good.
