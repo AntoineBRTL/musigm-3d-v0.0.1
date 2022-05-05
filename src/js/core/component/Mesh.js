@@ -40,7 +40,7 @@ export class Mesh extends Component{
         /**
          * @type {String}
          */
-        this.vertexShaderUniformWorldMatrixName = "mWorld";
+        this.vertexShaderUniformObjectMatrixName = "mObject";
 
         /**
          * @type {String}
@@ -51,43 +51,116 @@ export class Mesh extends Component{
          * @type {String}
          */
         this.vertexShaderUniformProjectionMatrixName = "mProj";
+
+        this.normalVertices = new Array();
     }
 
-    get normalVertices(){
+    computeNormal(smoothShading = true){
 
-        let normalVertices = new Array();
+        let trianglesNormal;
+        let verticesNormal;
 
-        for(var i = 0; i < this.vertices.length; i += 3){
+        // compute triangle normals
 
-            const P1x = this.vertices[i];
-            const P1y = this.vertices[(i + 1) % this.vertices.length];
-            const P1z = this.vertices[(i + 2) % this.vertices.length];
+        trianglesNormal = new Array();
 
-            const P2x = this.vertices[(i + 3) % this.vertices.length];
-            const P2y = this.vertices[(i + 4) % this.vertices.length];
-            const P2z = this.vertices[(i + 5) % this.vertices.length];
+        for(let i = 0; i < this.vertices.length; i+= this.dimension * 3){
+            const A = new Vector3(this.vertices[i + 0], this.vertices[i + 1], this.vertices[i + 2]);
+            const B = new Vector3(this.vertices[i + 3], this.vertices[i + 4], this.vertices[i + 5]);
+            const C = new Vector3(this.vertices[i + 6], this.vertices[i + 7], this.vertices[i + 8]);
 
-            const P3x = this.vertices[(i + 6) % this.vertices.length];
-            const P3y = this.vertices[(i + 7) % this.vertices.length];
-            const P3z = this.vertices[(i + 8) % this.vertices.length];
+            const AB = new Vector3(B.x - A.x, B.y - A.y, B.z - A.z);
+            const AC = new Vector3(C.x - A.x, C.y - A.y, C.z - A.z);
 
-            const A = new Vector3(P2x - P1x, P2y - P1y, P2z - P1z);
-            const B = new Vector3(P3x - P2x, P3y - P2y, P3z - P2z);
+            const pmid = new Vector3((A.x + B.x + C.x) / 3, (A.y + B.y + C.y) / 3, (A.z + B.z + C.z) / 3).normalized;
+            const centroid = new Vector3(0, 0, 0);
 
-            const cross = A.cross(B);
+            let N = AB.cross(AC).normalized;
 
-            normalVertices.push(...[cross.x, cross.y, cross.z]);
+            // facing normal
+            /*let distanceCentroid = pmid.subed(centroid).magnitude;
+            let distanceNormal = pmid.added(N).scaled(distanceCentroid).subed(centroid).magnitude;
+
+            if(distanceCentroid < distanceNormal){
+                N = N.scaled(-1).normalized;
+            }*/
+
+
+            /*if(pmid.subed(centroid).scalar(N) < 0){
+                N = N.scaled(-1).normalized;
+            }
+
+            for (let j = 0; j < this.dimension; j++) {
+                trianglesNormal.push(...[N.x, N.y, N.z]);
+            }*/
         }
 
-        return normalVertices;
+        if(!smoothShading){
+            this.normalVertices = trianglesNormal;
+            return;
+        }
+        // compute vertices normal   
+        verticesNormal = new Array();
+        
+        for (let i = 0; i < this.vertices.length; i += this.dimension) {
+            let vertex = new Vector3(
+                this.vertices[i], this.vertices[(i + 1) % this.vertices.length], this.vertices[(i + 2) % this.vertices.length]
+            );
+
+            let attachedTriangles = this.getAttachedTrianglesIndices(vertex);
+
+            let vertexNormal = new Vector3();
+
+            for (let j = 0; j < attachedTriangles.length; j += this.dimension){
+                let curentTriangleNormal = new Vector3(trianglesNormal[attachedTriangles[j]], trianglesNormal[attachedTriangles[j + 1]], trianglesNormal[attachedTriangles[j + 2]]);
+                vertexNormal = vertexNormal.added(curentTriangleNormal).normalized;
+            }
+
+            vertexNormal = vertexNormal.normalized;
+
+            verticesNormal.push(...[vertexNormal.x, vertexNormal.y, vertexNormal.z]);
+        }
+
+        this.normalVertices = verticesNormal;
+    }
+
+    /**
+     * @param {Vector3} vertex 
+     */
+    getAttachedTrianglesIndices(vertex){
+
+        let triangles = new Array();
+
+        for(let i = 0; i < this.vertices.length; i += this.dimension * 3 /** triangle */){
+
+            // check if you have the same point in the current triangle
+            let triangle = new Array();
+            triangle.push(new Vector3(this.vertices[i], this.vertices[i + 1], this.vertices[i + 2]));
+            triangle.push(new Vector3(this.vertices[i + 3], this.vertices[i + 4], this.vertices[i + 5]));
+            triangle.push(new Vector3(this.vertices[i + 6], this.vertices[i + 7], this.vertices[i + 8]));
+
+            for(let j = 0; j < 3; j++){
+                if(vertex.subed(triangle[j]).isZero()){
+                    triangles.push(
+                        ...[
+                            i, i + 1, i + 2
+                        ]
+                    );
+
+                    break;
+                }
+            }
+        }
+
+        return triangles;
     }
 
     addVertexAttribute(attribute, value, dimension = 3) {
         let alreadyExist = false;
 
-        this.vertexShaderAttributes.forEach(function(element){
+        this.vertexShaderAttributes.forEach(function(element, i){
             if(element.attribute = attribute){
-                element = {
+                this.vertexShaderAttributes[i] = {
                     attribute: attribute,
                     value: value,
                     dimension: dimension
@@ -109,9 +182,9 @@ export class Mesh extends Component{
     addVertexUniform(uniform, value, dimension = 4) {
         let alreadyExist = false;
 
-        this.vertexShaderUniforms.forEach(function(element){
+        this.vertexShaderUniforms.forEach(function(element, i){
             if(element.uniform = uniform){
-                element = {
+                this.vertexShaderUniforms[i] = {
                     uniform: uniform,
                     value: value,
                     dimension: dimension

@@ -22,9 +22,9 @@ export class Material extends Component {
 
         let alreadyExist = false;
 
-        this.fragmentShaderAttributes.forEach(function(element){
+        this.fragmentShaderAttributes.forEach(function(element, i){
             if(element.attribute = attribute){
-                element = {
+                this.fragmentShaderAttributes[i] = {
                     attribute: attribute,
                     value: value,
                     dimension: dimension
@@ -43,12 +43,13 @@ export class Material extends Component {
         }
     }
 
-    addFragmentUniform(uniform, value, dimension = 4) {
+    addFragmentUniform(uniform, value, dimension = 3) {
         let alreadyExist = false;
 
-        this.fragmentShaderUniforms.forEach(function(element){
+        this.fragmentShaderUniforms.forEach(function(element, i){
             if(element.uniform = uniform){
-                element = {
+
+                this.fragmentShaderUniforms[i] = {
                     uniform: uniform,
                     value: value,
                     dimension: dimension

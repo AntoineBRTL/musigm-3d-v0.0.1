@@ -58,7 +58,7 @@ export class GameObject{
      * @return {Matrix3} Transformation matrix
      */
     get transform() {
-        const transformationMatrix = new Matrix4().scaled(this.scale).rotated(this.rotation).translated(this.position);
+        const transformationMatrix = new Matrix4().translated(this.position).rotated(this.rotation).scaled(this.scale);
         return transformationMatrix;
     }
 

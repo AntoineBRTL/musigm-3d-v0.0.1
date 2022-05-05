@@ -53,6 +53,15 @@ export class Camera extends GameObject{
     }
 
     /**
+     * Transformation matrix
+     * @return {Matrix3} Transformation matrix
+     */
+    get transform() {
+        const transformationMatrix = new Matrix4().scaled(this.scale).rotated(this.rotation).translated(this.position);
+        return transformationMatrix;
+    }
+
+    /**
      * @return {Matrix4}
      */
     get projectionMatrix() {
@@ -155,13 +164,14 @@ export class Camera extends GameObject{
             // fill vertex shader attributes & uniforms
             // default attribute(s)
             this.fillShaderAttribute("coordinates", new Float32Array(mesh.vertices), 3, program);
+            this.fillShaderAttribute("coordinatesNormal", new Float32Array(mesh.normalVertices), 3, program);
 
             mesh.vertexShaderAttributes.forEach(function(element){
                 this.fillShaderAttribute(element.attribute, element.value, element.dimension, program);
             }, this);
 
             // default uniform(s)
-            this.fillShaderUniform(mesh.vertexShaderUniformWorldMatrixName, new Float32Array(gameObject.transform), 4, program);
+            this.fillShaderUniform(mesh.vertexShaderUniformObjectMatrixName, new Float32Array(gameObject.transform), 4, program);
             this.fillShaderUniform(mesh.vertexShaderUniformViewMatrixName, new Float32Array(this.transform), 4, program);
             this.fillShaderUniform(mesh.vertexShaderUniformProjectionMatrixName, new Float32Array(this.projectionMatrix), 4, program);
 
@@ -182,7 +192,7 @@ export class Camera extends GameObject{
             }, this);
 
             // draw
-            this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, mesh.vertices.length / mesh.dimension /** Merci à mon frère Pierru-sama pour ton aide sur ceci :D */);
+            this.gl.drawArrays(this.gl.TRIANGLES, 0, mesh.vertices.length / mesh.dimension /** Merci à mon frère Pierru-sama pour son aide sur le "/ mesh.dimension" :D */);
 
         }, this);
     }

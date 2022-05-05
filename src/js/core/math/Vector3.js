@@ -115,6 +115,10 @@ export class Vector3{
         return Math.sqrt((this.x - vector.x) ** 2 + (this.y - vector.y) ** 2 + (this.z - vector.z) ** 2);
     }
 
+    isZero(){
+        return this.x == 0 && this.y == 0 && this.z == 0;
+    }
+
     /**
      * shortcut for : new Vector(0, 0)
      * @returns {Vector3}
@@ -128,7 +132,7 @@ export class Vector3{
      * @returns {Vector3}
      */
     static get up() {
-        return new Vector(0, 1, 0);
+        return new Vector3(0, 1, 0);
     }
 
     /**
@@ -136,7 +140,7 @@ export class Vector3{
      * @returns {Vector3}
      */
     static get down() {
-        return new Vector(0, -1, 0);
+        return new Vector3(0, -1, 0);
     }
 
     /**
@@ -144,7 +148,7 @@ export class Vector3{
      * @returns {Vector3}
      */
     static get right() {
-        return new Vector(1, 0, 0);
+        return new Vector3(1, 0, 0);
     }
 
     /**
@@ -152,7 +156,23 @@ export class Vector3{
      * @returns {Vector3}
      */
     static get left() {
-        return new Vector(-1, 0, 0);
+        return new Vector3(-1, 0, 0);
+    }
+
+    /**
+     * shortcut for : new Vector(0, 0, 1)
+     * @returns {Vector3}
+     */
+     static get forward() {
+        return new Vector3(0, 0, 1);
+    }
+
+    /**
+     * shortcut for : new Vector(0, 0, -1)
+     * @returns {Vector3}
+     */
+    static get backward() {
+        return new Vector3(0, 0, -1);
     }
 
     /**
