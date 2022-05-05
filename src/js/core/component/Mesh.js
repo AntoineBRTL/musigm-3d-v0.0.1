@@ -86,13 +86,13 @@ export class Mesh extends Component{
             }*/
 
 
-            /*if(pmid.subed(centroid).scalar(N) < 0){
+            if(pmid.subed(centroid).scalar(N) < 0){
                 N = N.scaled(-1).normalized;
             }
 
             for (let j = 0; j < this.dimension; j++) {
                 trianglesNormal.push(...[N.x, N.y, N.z]);
-            }*/
+            }
         }
 
         if(!smoothShading){

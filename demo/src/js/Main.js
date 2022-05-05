@@ -49,14 +49,14 @@ export class Main{
                     1.0, -1.0, 1.0,
                     1.0, -1.0, -1.0
                 ];*/
-                myMesh.vertices = [];
+                /*myMesh.vertices = [];
                 const terWidth = 100;
                 const terHeight = 100;
                 for (var x = 0; x < terWidth; x += 2){
                     for (var z = 0; z < terHeight; z += 2){
                         this.addVertice(myMesh, x, 0, z);
                     }
-                }
+                }*/
 
                 //myMesh.vertices = THEPOT_MESH;
                 myMesh.computeNormal(false);
@@ -74,7 +74,7 @@ export class Main{
                 myObject.scale.y = 1.0;
                 /*myObject.position.x = -50;
                 myObject.position.z = -50;*/
-                myObject.position.y = 2.0;
+                //myObject.position.y = 2.0;
                 //myObject.rotation.x = 180;
                 // transformations
                 camera.position.z = -10;
@@ -99,8 +99,8 @@ export class Main{
                 function loop() {
                     myMaterial.addFragmentUniform("lightPosition", new Float32Array([lampTest.position.x, lampTest.position.y, lampTest.position.z]), 3);
 
-                    //myObject.rotation.x += 0.5;
-                    //myObject.rotation.y += 0.5;
+                    myObject.rotation.x += 0.5;
+                    myObject.rotation.y += 0.5;
 
                     // keyboard controls
                     if(Input.getKeyPress("z")){
