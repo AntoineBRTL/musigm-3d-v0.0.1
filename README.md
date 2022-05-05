@@ -2,7 +2,7 @@
 
 ### What is this ? ####
 
-I'm a young programmer how is learning at school.
+I'm a young programmer who is learning at school.
 I had an idea: create my own game engine to create my games, so I can say the game is 100% from me hahaha.
 
 I'm glad I am able to show you my code.
@@ -162,5 +162,8 @@ If you have any suggestions, please tell me and I would change the code :D.
 
 ### Patch Note ###
 For those who are interested hehe, I'm working a lot on the default shaders, I making some lights for now : 
-![alt text](./images/patch01.PNG)
+
 ![alt text](./images/patch02.gif)
+
+I'm getting this light effect by calculating the dot product between the vector light to face and normals from this same faces.
+The problem I have is that my normals are not well calculated so the result is not really good.
