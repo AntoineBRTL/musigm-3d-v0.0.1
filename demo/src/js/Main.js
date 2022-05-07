@@ -10,6 +10,7 @@ import { Input } from "../../../../musigm-3d-v0.0.1/src/js/core/tool/Input.js";
 import { CUBE_MESH, THEPOT_MESH } from "../../../../musigm-3d-v0.0.1/src/js/core/Constant.js";
 import { Utils } from "../../../../musigm-3d-v0.0.1/src/js/core/Utils.js";
 import { Vector3 } from "../../../../musigm-3d-v0.0.1/src/js/core/math/Vector3.js";
+import { Light } from "../../../src/js/core/component/Light.js";
 
 export class Main{
     constructor(){
@@ -35,6 +36,8 @@ export class Main{
                 // mesh + material
                 let myMesh = myObject.addComponent(Mesh);
                 let myMaterial = myObject.addComponent(Material);
+                myObject.addComponent(Light);
+
                 mySecondObject.addExistingComponent(myMesh);
                 mySecondObject.addExistingComponent(myMaterial);
 
@@ -65,9 +68,6 @@ export class Main{
 
                 //myMesh2.vertices = THEPOT_MESH;
                 //myMesh2.computeNormal(false);
-
-
-                console.log(lampTest);
                 
                 myObject.scale.x = 1.0;
                 myObject.scale.z = 1.0;
@@ -92,8 +92,6 @@ export class Main{
                     });
                 });
 
-                console.log(myMesh.vertexShaderAttributes);
-                
                 const speed = 0.1;
 
                 function loop() {

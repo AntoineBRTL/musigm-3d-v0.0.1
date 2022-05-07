@@ -1,3 +1,4 @@
+import { Light } from "./component/Light.js";
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
 import { GameObject } from "./GameObject.js";
@@ -141,6 +142,8 @@ export class Camera extends GameObject{
      */
     render(scene){
 
+        
+
         // clear the old frame
         this.clear();
 
@@ -148,7 +151,7 @@ export class Camera extends GameObject{
         gameObjetsToRender.forEach(function(gameObject){
 
             // check if the gameObject has a material
-            if(!gameObject.hasComponent(Material)){
+            if(!gameObject.hasComponent(Material) && !gameObject.hasComponent(Mesh)){
                 return;
             }
 
@@ -186,6 +189,16 @@ export class Camera extends GameObject{
 
             // default uniform(s)
             this.fillShaderUniform("resolution", new Float32Array([this.canvas.width, this.canvas.height]), 2, program);
+            // default (lights)
+            for(let i = 0; i < scene.lights.length; i++){
+
+                const light = scene.lights[i].getComponent(Light);
+
+                this.fillShaderUniform("directionalLight[" + i + "].intensity", new Float32Array([light.intensity]), 1, program);
+                this.fillShaderUniform("directionalLight[" + i + "].color", new Float32Array(light.color), 3, program);
+                this.fillShaderUniform("directionalLight[" + i + "].ambientStrength", new Float32Array([light.ambientStrength]), 1, program);
+                this.fillShaderUniform("directionalLight[" + i + "].direction", new Float32Array([scene.lights[i].up.scaled(-1).x, scene.lights[i].up.scaled(-1).y, scene.lights[i].up.scaled(-1).z]), 3, program);
+            }
 
             material.fragmentShaderUniforms.forEach(function(element){
                 this.fillShaderUniform(element.uniform, element.value, element.dimension, program);

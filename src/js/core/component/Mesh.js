@@ -159,7 +159,7 @@ export class Mesh extends Component{
         let alreadyExist = false;
 
         this.vertexShaderAttributes.forEach(function(element, i){
-            if(element.attribute = attribute){
+            if(element.attribute == attribute){
                 this.vertexShaderAttributes[i] = {
                     attribute: attribute,
                     value: value,
@@ -183,7 +183,7 @@ export class Mesh extends Component{
         let alreadyExist = false;
 
         this.vertexShaderUniforms.forEach(function(element, i){
-            if(element.uniform = uniform){
+            if(element.uniform == uniform){
                 this.vertexShaderUniforms[i] = {
                     uniform: uniform,
                     value: value,

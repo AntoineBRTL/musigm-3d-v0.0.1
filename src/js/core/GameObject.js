@@ -6,6 +6,7 @@ import { Vector3 } from "./math/Vector3.js";
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
 import { Scene } from "./Scene.js";
+import { Light } from "./component/Light.js";
 
 export class GameObject{
     /**
@@ -51,6 +52,11 @@ export class GameObject{
          * @type {String}
          */
         this.layer = "default" || args.layer;
+        
+        /**
+         * @type {Array<Scene>}
+         */
+        this.scenesAttached = new Array();
     }
 
     /**
@@ -96,11 +102,19 @@ export class GameObject{
 
     /**
      * @param {Function} component 
-     * @return {Material | Mesh }
+     * @return {Material | Mesh | Light }
      */
     addComponent(component){
         const comp = eval("new " + component.name + "();");
         this.behaviors.push(comp);
+
+        // Specials comps TODO : automatisate
+        if(component == Light){
+            this.scenesAttached.forEach(function(scene){
+                scene.lights.push(this);
+            }, this);
+        }
+
         return comp;
     }
 
@@ -116,6 +130,7 @@ export class GameObject{
     /**
      * Return a component to the game object
      * @param {Function} component 
+     * @return {Material | Mesh | Light }
      */
     getComponent(component){
 

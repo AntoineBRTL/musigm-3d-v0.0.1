@@ -9,6 +9,12 @@ export class Scene extends GameObject{
          * @type {Array<GameObject>}
          */
         this.content = new Array();
+
+        /**
+         * Light on the scene
+         * @type {Array<GameObject>}
+         */
+        this.lights = new Array();
     }
 
     /**
@@ -18,6 +24,7 @@ export class Scene extends GameObject{
     add(...gameObjects){
         gameObjects.forEach(function(gameObject){
             this.content.push(gameObject);
+            gameObject.scenesAttached.push(this);
         }, this);
     }
 }

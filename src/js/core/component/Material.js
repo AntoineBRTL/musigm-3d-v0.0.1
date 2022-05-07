@@ -23,7 +23,7 @@ export class Material extends Component {
         let alreadyExist = false;
 
         this.fragmentShaderAttributes.forEach(function(element, i){
-            if(element.attribute = attribute){
+            if(element.attribute == attribute){
                 this.fragmentShaderAttributes[i] = {
                     attribute: attribute,
                     value: value,
@@ -47,7 +47,7 @@ export class Material extends Component {
         let alreadyExist = false;
 
         this.fragmentShaderUniforms.forEach(function(element, i){
-            if(element.uniform = uniform){
+            if(element.uniform == uniform){
 
                 this.fragmentShaderUniforms[i] = {
                     uniform: uniform,
