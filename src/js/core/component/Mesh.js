@@ -52,7 +52,12 @@ export class Mesh extends Component{
          */
         this.vertexShaderUniformProjectionMatrixName = "mProj";
 
+        /**
+         * @type {Array<number>}
+         */
         this.normalVertices = new Array();
+
+        this.computeNormal(false);
     }
 
     computeNormal(smoothShading = true){

@@ -28,122 +28,44 @@ Main.js:
 // start by creating your Main class like this :
 
 // these are the imports, vscode is making them by default so you don't have to worry about them :D
-import { Scene } from "musigm-3d-v0.0.1/src/js/core/Scene.js";
-import { Camera } from "musigm-3d-v0.0.1/src/js/core/Camera.js";
-import { GameObject } from "musigm-3d-v0.0.1/src/js/core/GameObject.js";
-import { Material } from "musigm-3d-v0.0.1/src/js/core/component/Material.js";
-import { Mesh } from "musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
+import { Scene } from "../../../../musigm-3d-v0.0.1/src/js/core/Scene.js";
+import { Camera } from "../../../../musigm-3d-v0.0.1/src/js/core/Camera.js";
+import { GameObject } from "../../../../musigm-3d-v0.0.1/src/js/core/GameObject.js";
+import { DirectionLight } from "../../../src/js/core/component/DirectionLight.js";
+import { Material } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Material.js";
+import { Mesh } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
 
 export class Main{
     /**
-     * Main class
+     * @Saumon-cru  
      */
     constructor(){
-        // create a scene
-        const scene = new Scene();
-
-        // create a camera
-        const camera = new Camera();
-
-        // create a gameObjects & add it the scene
-        let myCube = new GameObject();
-        scene.add(myCube);
-
-        // add him a mesh and a material so we can render it
-        let myMesh = myCube.addComponent(Mesh);
-        let myMaterial = myCube.addComponent(Material);
-
-        // apply shitty transformations to the object ahha
-        camera.position.z = -10;
-        myCube.rotation.y = 45;
-        myCube.rotation.x = 45;
-        
-        function loop() {
-
-            // other transformations so it looks nice 
-            myCube.rotation.y += 0.5;
-            myCube.rotation.x += 0.5;
-
-            // ask the camera to render the scene
-            camera.render(scene);
-
-            requestAnimationFrame(loop.bind(this));
-        }
-        loop();
-    }
-}
-
-```
-
-#### Output ####
-![alt text](./images/demo.PNG)
-
-### FPS Demo ###
-
-Main.js:
-```javascript
-import { Scene } from "musigm-3d-v0.0.1/src/js/core/Scene.js";
-import { Camera } from "musigm-3d-v0.0.1/src/js/core/Camera.js";
-import { Material } from "musigm-3d-v0.0.1/src/js/core/component/Material.js";
-import { Mesh } from "musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
-import { GameObject } from "musigm-3d-v0.0.1/src/js/core/GameObject.js";
-import { Input } from "musigm-3d-v0.0.1/src/js/core/tool/Input.js";
-
-export class Main{
-    constructor(){
         // scene
-        const scene = new Scene();
+        let scene = new Scene();
 
         // camera
-        const camera = new Camera();
+        let camera = new Camera();
+        camera.position.z = -10.0;
 
-        // gameObjects
-        let myObject = new GameObject();
-        scene.add(myObject);
+        // direction light
+        let directionLight = new GameObject();
+        directionLight.addComponent(DirectionLight);
 
-        // mesh + material
-        let myMesh = myObject.addComponent(Mesh);
-        let myMaterial = myObject.addComponent(Material);
-
-        // transformations
-        camera.position.z = -10;
-        myObject.rotation.y = 45;
-        myObject.rotation.x = 45;
-
-        // mouse event 
-        // NB: the Input class does not support mouse events yet
-        // Camera.lockCursor() take 1 argument which is the callback when the cursor is locked
-        camera.lockCursor(function(){
-            window.addEventListener("mousemove", function(event){
-                camera.rotation.y += event.movementX * 0.1;
-                camera.rotation.x += event.movementY * 0.1;
-            });
-        });
+        // cube
+        let cube = new GameObject();
+        cube.addComponent(Mesh);
+        cube.addComponent(Material);
         
-        const speed = 0.1;
+        // add all your objects to the scene
+        scene.add(directionLight, cube);
 
         function loop() {
 
-            myObject.rotation.y += 0.5;
-            myObject.rotation.x += 0.5;
+            // rotate the cube
+            cube.rotation.x += 0.5;
+            cube.rotation.y += 0.5;
 
-            // keyboard controls
-            if(Input.getKeyPress("z")){
-                camera.position = camera.position.added(camera.forward.scaled(speed));
-            }
-
-            if(Input.getKeyPress("s")){
-                camera.position = camera.position.added(camera.forward.scaled(-speed));
-            }
-
-            if(Input.getKeyPress("d")){
-                camera.position = camera.position.added(camera.right.scaled(speed));
-            }
-
-            if(Input.getKeyPress("q")){
-                camera.position = camera.position.added(camera.right.scaled(-speed));
-            }
-
+            // render
             camera.render(scene);
 
             requestAnimationFrame(loop.bind(this));
@@ -153,7 +75,11 @@ export class Main{
 }
 
 new Main();
+
 ```
+
+#### Output ####
+![alt text](./images/demo.gif)
 
 ### Advices ###
 I strongly recommends you to use musigm to create small games for now, I'm still a beginner so my code is not 100% perfect and if something is marked as deprecaded, do not use it !

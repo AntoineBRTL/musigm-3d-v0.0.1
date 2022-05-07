@@ -7,6 +7,7 @@ import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
 import { Scene } from "./Scene.js";
 import { Light } from "./component/Light.js";
+import { DirectionLight } from "./component/DirectionLight.js";
 
 export class GameObject{
     /**
@@ -60,6 +61,22 @@ export class GameObject{
     }
 
     /**
+     * 
+     * @param {Scene} scene 
+     */
+    loadComponentInScene(scene){
+        this.behaviors.forEach(function(behavior){
+            if(behavior.constructor.name == DirectionLight.name){
+                scene.directionLights.push(this);
+            }
+
+            if(behavior.constructor.name == Light.name){
+                scene.lights.push(this);
+            }
+        }, this);
+    }
+
+    /**
      * Transformation matrix
      * @return {Matrix3} Transformation matrix
      */
@@ -102,7 +119,7 @@ export class GameObject{
 
     /**
      * @param {Function} component 
-     * @return {Material | Mesh | Light }
+     * @return {Material | Mesh | Light | DirectionLight }
      */
     addComponent(component){
         const comp = eval("new " + component.name + "();");
@@ -112,6 +129,12 @@ export class GameObject{
         if(component == Light){
             this.scenesAttached.forEach(function(scene){
                 scene.lights.push(this);
+            }, this);
+        }
+
+        if(component == DirectionLight){
+            this.scenesAttached.forEach(function(scene){
+                scene.directionLights.push(this);
             }, this);
         }
 
@@ -130,7 +153,7 @@ export class GameObject{
     /**
      * Return a component to the game object
      * @param {Function} component 
-     * @return {Material | Mesh | Light }
+     * @return {Material | Mesh | Light | DirectionLight }
      */
     getComponent(component){
 

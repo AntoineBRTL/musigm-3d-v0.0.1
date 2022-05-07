@@ -1,9 +1,8 @@
 import { GameObject } from "./GameObject.js";
 
-export class Scene extends GameObject{
+export class Scene{
     constructor(){
-        super();
-        
+
         /**
          * The gameObjects in the scene
          * @type {Array<GameObject>}
@@ -15,6 +14,12 @@ export class Scene extends GameObject{
          * @type {Array<GameObject>}
          */
         this.lights = new Array();
+
+        /**
+         * Light on the scene
+         * @type {Array<GameObject>}
+         */
+        this.directionLights = new Array();
     }
 
     /**
@@ -25,6 +30,7 @@ export class Scene extends GameObject{
         gameObjects.forEach(function(gameObject){
             this.content.push(gameObject);
             gameObject.scenesAttached.push(this);
+            gameObject.loadComponentInScene(this);
         }, this);
     }
 }

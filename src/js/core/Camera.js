@@ -1,3 +1,4 @@
+import { DirectionLight } from "./component/DirectionLight.js";
 import { Light } from "./component/Light.js";
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
@@ -190,14 +191,14 @@ export class Camera extends GameObject{
             // default uniform(s)
             this.fillShaderUniform("resolution", new Float32Array([this.canvas.width, this.canvas.height]), 2, program);
             // default (lights)
-            for(let i = 0; i < scene.lights.length; i++){
+            for(let i = 0; i < scene.directionLights.length; i++){
 
-                const light = scene.lights[i].getComponent(Light);
+                const light = scene.directionLights[i].getComponent(DirectionLight);
 
                 this.fillShaderUniform("directionalLight[" + i + "].intensity", new Float32Array([light.intensity]), 1, program);
                 this.fillShaderUniform("directionalLight[" + i + "].color", new Float32Array(light.color), 3, program);
                 this.fillShaderUniform("directionalLight[" + i + "].ambientStrength", new Float32Array([light.ambientStrength]), 1, program);
-                this.fillShaderUniform("directionalLight[" + i + "].direction", new Float32Array([scene.lights[i].up.scaled(-1).x, scene.lights[i].up.scaled(-1).y, scene.lights[i].up.scaled(-1).z]), 3, program);
+                this.fillShaderUniform("directionalLight[" + i + "].direction", new Float32Array([scene.directionLights[i].up.scaled(-1).x, scene.directionLights[i].up.scaled(-1).y, scene.directionLights[i].up.scaled(-1).z]), 3, program);
             }
 
             material.fragmentShaderUniforms.forEach(function(element){
