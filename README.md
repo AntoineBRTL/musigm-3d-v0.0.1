@@ -1,4 +1,4 @@
-# musigm-js
+# musigm-js ![alt text](./images/icon.ico)
 
 ### What is this ? ####
 
