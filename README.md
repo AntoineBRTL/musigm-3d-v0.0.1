@@ -14,7 +14,7 @@ Let's start doing our shit !
 
 Create a simple .html file and a .js file :
 
-index.html:
+#### index.html: ####
 ```html
 <script type='module'>
     <!-- our code should be here -->
@@ -22,7 +22,7 @@ index.html:
 </script>
 ```
 
-Main.js:
+#### Main.js: ####
 ```javascript
 // this is the best part ! 
 // start by creating your Main class like this :
@@ -96,7 +96,7 @@ By the way I re wrote the tutorial, there is no more the FPS demo but maybe I wi
 
 I made something cool with scenes and gameObjects, when you link the GameObject with any Scene, you can find that Scene in the current GameObject using GameObject.scenesAttached;
 
-Main.js:
+#### Main.js: ####
 ```javascript
 let myScene = new Scene();
 let myGameObject = new GameObject();
