@@ -91,7 +91,7 @@ If you have any suggestions, please tell me and I would change the code :D.
 --------------------------------------------------------------------------------------------------------------------------------
 
 #### 07/05/2022 ####
-New types of lights (directional lights). The defaults shaders are now the ones you the light implementation !
+New types of lights (directional lights). The defaults shaders are now the ones with the light implementation !
 By the way I re wrote the tutorial, there is no more the FPS demo but maybe I will re-write it in the future :D.
 
 I made something cool with scenes and gameObjects, when you link the GameObject with any Scene, you can find that Scene in the current GameObject using GameObject.scenesAttached;
