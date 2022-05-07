@@ -87,7 +87,10 @@ I strongly recommends you to use musigm to create small games for now, I'm still
 If you have any suggestions, please tell me and I would change the code :D.
 
 ### Patch Note ###
-<- 07/05/2022 ->
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+#### 07/05/2022 ####
 New types of lights (directional lights). The defaults shaders are now the ones you the light implementation !
 By the way I re wrote the tutorial, there is no more the FPS demo but maybe I will re-write it in the future :D.
 
@@ -113,7 +116,7 @@ For the next update, there will be more lights and I hope I will be able to impl
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-<- 05/05/2022 ->
+#### 05/05/2022 ####
 For those who are interested hehe, I'm working a lot on the default shaders, I making some lights for now : 
 
 ![alt text](./images/patch02.gif)
