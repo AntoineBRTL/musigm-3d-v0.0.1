@@ -121,6 +121,14 @@ A = 1.0 / (Light.constant + Light.linear * d + Light.quadratic * (d ** 2));
 
 Next update will be about shadows I think :D ! 
 
+![alt text](./images/patch04.PNG)
+
+Assuming the axis are like this ;
+
+![alt text](./images/axis-musigm.png)
+
+you may find some wtf values in the demos
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 #### 07/05/2022 ####

@@ -207,4 +207,8 @@ export class Mesh extends Component{
             });
         }
     }
+
+    useShader(vertexShaderSource){
+        this.vertexShaderSource = vertexShaderSource;
+    }
 }

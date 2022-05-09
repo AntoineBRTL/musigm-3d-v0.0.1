@@ -2,6 +2,7 @@ import { DirectionLight } from "./component/DirectionLight.js";
 import { Light } from "./component/Light.js";
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
+import { DEFAULT_OLD_FRAGMENT_SHADER_SOURCE } from "./Constant.js";
 import { GameObject } from "./GameObject.js";
 import { Matrix4 } from "./math/Matrix4.js";
 import { Vector3 } from "./math/Vector3.js";

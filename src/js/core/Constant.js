@@ -21,7 +21,6 @@ export const DEFAULT_OLD_FRAGMENT_SHADER_SOURCE = [
 'precision mediump float;',
 'uniform vec2 resolution;',
 '',
-'varying vec3 fragNormal;',
 'uniform vec3 sunDirection;',
 'uniform vec3 sunIntensity;',
 '',
@@ -75,7 +74,7 @@ struct Light{
     float quadratic;
 };
 uniform int numberOfLights;
-uniform Light light[10];
+uniform Light light[100];
 
 uniform vec2 resolution;
 
@@ -93,7 +92,7 @@ vec3 computeDirectionalLight(DirectionalLight dirLight){
 vec3 computeLight(Light light){
     float distance = length(light.position - fragPosition);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
-    vec3 direction = normalize(fragPosition - light.position);
+    vec3 direction = normalize(light.position - fragPosition);
     vec3 diffuse = abs(max(dot(fragNormal, direction), 0.0)) * light.intensity * light.color * attenuation;
 
     return diffuse;
@@ -102,9 +101,8 @@ vec3 computeLight(Light light){
 void main()
 {
     // TODO : automatisate lightColor
-    //vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec3 objectColor = vec3(gl_FragCoord.x / resolution.x, gl_FragCoord.y / resolution.y, 1.0);
-    vec3 result = objectColor;
+    vec3 result = vec3(1.0, 1.0, 1.0);
     
     if(numberOfDirectionalLights > 0){
         for(int i = 0; i < 1; i++){
@@ -113,8 +111,12 @@ void main()
     }
 
     if(numberOfLights > 0){
-        for(int i = 0; i < 1; i++){
-            result += computeLight(light[i]);
+        for(int i = 0; i < 100; i++){
+            vec3 computedLight = computeLight(light[i]);
+            if(computedLight.x > 0.0 || computedLight.y > 0.0 || computedLight.z > 0.0){
+                result += computedLight;
+            }
+            
         }
     }
     

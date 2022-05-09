@@ -67,4 +67,8 @@ export class Material extends Component {
             });
         }
     }
+
+    useShader(fragmentShaderSource){
+        this.fragmentShaderSource = fragmentShaderSource;
+    }
 }
