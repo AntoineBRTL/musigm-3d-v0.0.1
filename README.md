@@ -3,11 +3,11 @@
 ### What is this ? ####
 
 I'm a young programmer who is learning at school.
-I had an idea: create my own game engine to create my games, so I can say the game is 100% from me hahaha.
+I had an idea: create my own game engine framework to create my games, so I can say the game is 100% from me hahaha.
 
 I'm glad I am able to show you my code.
 
-Musigm is a 3D game engine exactly like THREE.js, but it's mine so it's better ;P.
+Musigm is a open gl based library to create 3D games exactly like THREE.js, but it's mine so it's better ;P.
 
 ### How to use musigm-js ? ###
 Let's start doing our shit !
