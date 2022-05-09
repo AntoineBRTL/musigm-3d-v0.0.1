@@ -62,16 +62,27 @@ struct DirectionalLight{
     float ambientStrength;
     vec3 direction;
 };
-
+uniform int numberOfDirectionalLights;
 uniform DirectionalLight directionalLight[1];
 
+struct Light{
+    float intensity;
+    vec3 color;
+    vec3 position;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+uniform int numberOfLights;
+uniform Light light[10];
+
 uniform vec2 resolution;
-uniform vec3 lightPosition;
 
 varying vec3 fragPosition;
 varying vec3 fragNormal;
 
-vec3 computeDirectionLight(DirectionalLight dirLight){
+vec3 computeDirectionalLight(DirectionalLight dirLight){
     vec3 ambient = dirLight.ambientStrength * dirLight.color;
     // max() -> no reversed colors
     vec3 diffuse = abs(max(dot(fragNormal, dirLight.direction), 0.0)) * dirLight.intensity * dirLight.color;
@@ -79,24 +90,32 @@ vec3 computeDirectionLight(DirectionalLight dirLight){
     return (ambient + diffuse);
 }
 
+vec3 computeLight(Light light){
+    float distance = length(light.position - fragPosition);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
+    vec3 direction = normalize(fragPosition - light.position);
+    vec3 diffuse = abs(max(dot(fragNormal, direction), 0.0)) * light.intensity * light.color * attenuation;
+
+    return diffuse;
+}
+
 void main()
 {
     // TODO : automatisate lightColor
     //vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec3 objectColor = vec3(gl_FragCoord.x / resolution.x, gl_FragCoord.y / resolution.y, 1.0);
-
-    /*float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * lightColor;
-
-    vec3 lightDirection = normalize(lightPosition - fragPosition);
-    vec3 diffuse = abs(max(dot(fragNormal, lightDirection), 0.0)) * 0.5 * lightColor;
-
-    vec3 result = (ambient + diffuse) * objectColor;
-    gl_FragColor = vec4(result, 1.0);*/
     vec3 result = objectColor;
     
-    for(int i = 0; i < 1; i++){
-        result *= computeDirectionLight(directionalLight[i]);
+    if(numberOfDirectionalLights > 0){
+        for(int i = 0; i < 1; i++){
+            result *= computeDirectionalLight(directionalLight[i]);
+        }
+    }
+
+    if(numberOfLights > 0){
+        for(int i = 0; i < 1; i++){
+            result += computeLight(light[i]);
+        }
     }
     
     gl_FragColor = vec4(result, 1.0);

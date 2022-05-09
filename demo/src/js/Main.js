@@ -4,6 +4,7 @@ import { GameObject } from "../../../../musigm-3d-v0.0.1/src/js/core/GameObject.
 import { DirectionLight } from "../../../src/js/core/component/DirectionLight.js";
 import { Material } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Material.js";
 import { Mesh } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
+import { Light } from "../../../src/js/core/component/Light.js";
 
 export class Main{
     constructor(){
@@ -22,9 +23,23 @@ export class Main{
         let cube = new GameObject();
         cube.addComponent(Mesh);
         cube.addComponent(Material);
+
+        let light = new GameObject();
+        let lightCompo = light.addComponent(Light);
+        lightCompo.color = [0.0, 1.0, 0.0];
+
+        light.position.x = -5;
+        light.position.z = -5;
+
+        /*camera.lockCursor(function(){
+            window.addEventListener("mousemove", function(event){
+                cube.rotation.y += event.movementX * 0.1;
+                cube.rotation.x += event.movementY * 0.1;
+            });
+        }.bind(this));*/
         
         // add all your objects to the scene
-        scene.add(directionLight, cube);
+        scene.add(directionLight, cube, light);
 
         function loop() {
 

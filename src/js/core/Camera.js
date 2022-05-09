@@ -191,14 +191,25 @@ export class Camera extends GameObject{
             // default uniform(s)
             this.fillShaderUniform("resolution", new Float32Array([this.canvas.width, this.canvas.height]), 2, program);
             // default (lights)
+            
+            this.fillShaderUniform("numberOfDirectionalLights", new Float32Array([scene.directionLights.length]), 1, program, true);
             for(let i = 0; i < scene.directionLights.length; i++){
-
                 const light = scene.directionLights[i].getComponent(DirectionLight);
-
                 this.fillShaderUniform("directionalLight[" + i + "].intensity", new Float32Array([light.intensity]), 1, program);
                 this.fillShaderUniform("directionalLight[" + i + "].color", new Float32Array(light.color), 3, program);
                 this.fillShaderUniform("directionalLight[" + i + "].ambientStrength", new Float32Array([light.ambientStrength]), 1, program);
                 this.fillShaderUniform("directionalLight[" + i + "].direction", new Float32Array([scene.directionLights[i].up.scaled(-1).x, scene.directionLights[i].up.scaled(-1).y, scene.directionLights[i].up.scaled(-1).z]), 3, program);
+            }
+
+            this.fillShaderUniform("numberOfLights", new Float32Array([scene.lights.length]), 1, program, true);
+            for(let i = 0; i < scene.lights.length; i++){
+                const light = scene.lights[i].getComponent(Light);
+                this.fillShaderUniform("light[" + i + "].intensity", new Float32Array([light.intensity]), 1, program);
+                this.fillShaderUniform("light[" + i + "].color", new Float32Array(light.color), 3, program);
+                this.fillShaderUniform("light[" + i + "].position", new Float32Array([scene.lights[i].position.x, scene.lights[i].position.y, scene.lights[i].position.z]), 3, program);
+                this.fillShaderUniform("light[" + i + "].constant", new Float32Array([light.constent]), 1, program);
+                this.fillShaderUniform("light[" + i + "].linear", new Float32Array([light.linear]), 1, program);
+                this.fillShaderUniform("light[" + i + "].quadratic", new Float32Array([light.quadratic]), 1, program);
             }
 
             material.fragmentShaderUniforms.forEach(function(element){
@@ -294,20 +305,27 @@ export class Camera extends GameObject{
      * @param {String} uniform 
      * @param {*} value 
      */
-    fillShaderUniform(uniform, value, dimension, program) {
+    fillShaderUniform(uniform, value, dimension, program, isInt = false) {
         const uniformLocation = this.gl.getUniformLocation(program, uniform);
         //this.gl.uniform4fv(uniformLocation, value);
-        if(dimension == 4){
-            this.gl.uniformMatrix4fv(uniformLocation, this.gl.FALSE, value);
+        if(!isInt){
+            if(dimension == 4){
+                this.gl.uniformMatrix4fv(uniformLocation, this.gl.FALSE, value);
+            }
+            if(dimension == 3){
+                this.gl.uniform3fv(uniformLocation, value);
+            }
+            if(dimension == 2){
+                this.gl.uniform2fv(uniformLocation, value);
+            }
+            if(dimension == 1){
+                this.gl.uniform1fv(uniformLocation, value);
+            }
         }
-        if(dimension == 3){
-            this.gl.uniform3fv(uniformLocation, value);
-        }
-        if(dimension == 2){
-            this.gl.uniform2fv(uniformLocation, value);
-        }
-        if(dimension == 1){
-            this.gl.uniform1fv(uniformLocation, value);
+        else{
+            if(dimension == 1){
+                this.gl.uniform1iv(uniformLocation, value);
+            }
         }
     }
 }

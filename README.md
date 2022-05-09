@@ -90,6 +90,44 @@ If you have any suggestions, please tell me and I would change the code :D.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
+#### 09/05/2022 ####
+Yo ! Finally, there is one more light. 
+
+![alt text](./images/patch03.gif)
+
+So to be clear, there is two lights that you can use :
+
+#### Main.js: ####
+```javascript
+let light = new GameObject();
+light.addComponent(Light);
+
+let directionLight = new GameObject();
+directionLight.addComponent(DirectionLight);
+
+myScene.add(light, directionLight);
+```
+
+Of course, you can simply create a scene without any lights so there will be no shadows etc...
+For this new light, I've created 3 more parameters : 
+
+```javascript
+Light.constant;
+Light.linear;
+Light.quadratic;
+```
+
+These are used to calculate the attenuation of the light :
+
+```javascript
+// d = distance between the pixel and the center of the light
+A = 1.0 / (Light.constant + Light.linear * d + Light.quadratic * (d ** 2));
+```
+
+Next update will be about shadows I think :D ! 
+
+--------------------------------------------------------------------------------------------------------------------------------
+
 #### 07/05/2022 ####
 New types of lights (directional lights). The defaults shaders are now the ones with the light implementation !
 By the way I re wrote the tutorial, there is no more the FPS demo but maybe I will re-write it in the future :D.
