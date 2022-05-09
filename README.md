@@ -81,11 +81,6 @@ new Main();
 #### Output ####
 ![alt text](./images/demo.gif)
 
-### Advices ###
-I strongly recommends you to use musigm to create small games for now, I'm still a beginner so my code is not 100% perfect and if something is marked as deprecaded, do not use it !
-
-If you have any suggestions, please tell me and I would change the code :D.
-
 ### Patch Note ###
 
 --------------------------------------------------------------------------------------------------------------------------------
