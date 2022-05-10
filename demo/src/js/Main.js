@@ -7,6 +7,7 @@ import { Mesh } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Mesh.js
 import { Light } from "../../../src/js/core/component/Light.js";
 import { DEFAULT_FRAGMENT_SHADER_SOURCE, DEFAULT_OLD_FRAGMENT_SHADER_SOURCE } from "../../../src/js/core/Constant.js";
 import { Input } from "../../../../musigm-3d-v0.0.1/src/js/core/tool/Input.js";
+import { Vector3 } from "../../../src/js/core/math/Vector3.js";
 
 export class Main{
     constructor(){
@@ -16,6 +17,7 @@ export class Main{
         // camera
         let camera = new Camera();
         camera.position.z = -10.0;
+        camera.position.y = 10;
 
         // direction light
         let directionLight = new GameObject();
@@ -23,9 +25,23 @@ export class Main{
 
         // cube
         let cube = new GameObject();
-        cube.addComponent(Mesh);
+        let mesh = cube.addComponent(Mesh);
         let material = cube.addComponent(Material);
         material.useShader(DEFAULT_FRAGMENT_SHADER_SOURCE);
+
+        mesh.vertices = [
+            -1.0, -1.0, 1.0,
+            1.0, -1.0, -1.0,
+            -1.0, -1.0, -1.0,
+            -1.0, -1.0, 1.0,
+            1.0, -1.0, 1.0,
+            1.0, -1.0, -1.0
+        ].reverse();
+
+        mesh.computeFlatShadingNormals();
+        cube.scale.x = 10.0;
+        cube.scale.z = 10.0;
+        cube.position.y = -3.0;
 
         let light = new GameObject();
         let lightCompo = light.addComponent(Light);
@@ -40,7 +56,7 @@ export class Main{
 
         let light2 = new GameObject();
         let light2Compo = light2.addComponent(Light);
-        light2Compo.color = [0.0, 0.0, 1.0];
+        light2Compo.color = [1.0, 0.0, 0.0];
         light2.addComponent(Mesh);
         light2.addComponent(Material).useShader(DEFAULT_OLD_FRAGMENT_SHADER_SOURCE);
         light2.scale = light2.scale.scaled(0.2);
@@ -55,17 +71,21 @@ export class Main{
                 camera.rotation.x += event.movementY * 0.1;
             });
         }.bind(this));
+
+        window.addEventListener("wheel", function(event){
+            cube.position.y -= event.wheelDelta * 0.01;
+        });
         
         // add all your objects to the scene
-        scene.add(directionLight, cube, light, light2);
+        scene.add(directionLight, cube, light);
 
         const speed = 0.1;
 
         function loop() {
 
             // rotate the cube
-            cube.rotation.x += 0.5;
-            cube.rotation.y += 0.5;
+            /*cube.rotation.x += 0.5;
+            cube.rotation.y += 0.5;*/
 
             // keyboard controls
             if(Input.getKeyPress("z")){
@@ -82,6 +102,14 @@ export class Main{
 
             if(Input.getKeyPress("q")){
                 camera.position = camera.position.added(camera.right.scaled(-speed));
+            }
+
+            if(Input.getKeyPress("Shift")){
+                camera.position = camera.position.added(Vector3.down.scaled(speed));
+            }
+
+            if(Input.getKeyPress(" ")){
+                camera.position = camera.position.added(Vector3.up.scaled(speed));
             }
 
             // render

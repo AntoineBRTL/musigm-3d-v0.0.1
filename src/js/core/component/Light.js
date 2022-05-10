@@ -9,7 +9,7 @@ export class Light extends Component{
 
         // basic settings
         this.constent = 1.0;
-        this.linear = 0.09;
-        this.quadratic = 0.032;
+        this.linear = 0.022;
+        this.quadratic = 0.0019;
     }
 }

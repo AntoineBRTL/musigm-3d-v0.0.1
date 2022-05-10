@@ -111,7 +111,7 @@ void main()
     }
 
     if(numberOfLights > 0){
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 10; i++){
             vec3 computedLight = computeLight(light[i]);
             if(computedLight.x > 0.0 || computedLight.y > 0.0 || computedLight.z > 0.0){
                 result += computedLight;

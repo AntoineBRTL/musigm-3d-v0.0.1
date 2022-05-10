@@ -90,6 +90,8 @@ Today I made a lot of optimisation for the CPU, (not GPU for now ...), a lot of 
 
 Of course there is still a lot of work in the GPU optimisation but it will come soon :D !
 
+![alt text](./images/patch05.PNG)
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 #### 09/05/2022 ####

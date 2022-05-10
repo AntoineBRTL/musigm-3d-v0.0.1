@@ -80,7 +80,8 @@ export class Mesh extends Component{
             const pmid = new Vector3((A.x + B.x + C.x) / 3, (A.y + B.y + C.y) / 3, (A.z + B.z + C.z) / 3).normalized;
             const centroid = new Vector3(0, 0, 0);
 
-            let N = AB.cross(AC).normalized;
+            let N = AB.cross(AC);
+            N = N.normalized;
 
             // facing normal
             if(pmid.subed(centroid).scalar(N) < 0){
