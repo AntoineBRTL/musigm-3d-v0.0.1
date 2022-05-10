@@ -85,6 +85,13 @@ new Main();
 
 --------------------------------------------------------------------------------------------------------------------------------
 
+#### 10/05/2022 ####
+Today I made a lot of optimisation for the CPU, (not GPU for now ...), a lot of quadratic times algorithms have been changed to linear time ones.
+
+Of course there is still a lot of work in the GPU optimisation but it will come soon :D !
+
+--------------------------------------------------------------------------------------------------------------------------------
+
 #### 09/05/2022 ####
 Yo ! Finally, there is one more light. 
 

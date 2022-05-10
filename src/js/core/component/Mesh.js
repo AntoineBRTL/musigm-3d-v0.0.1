@@ -35,7 +35,12 @@ export class Mesh extends Component{
         /**
          * @type {String}
          */
-        this.vertexShaderAttributeCoordinatesName = "coordinates";
+        this.vertexShaderAttributeVertexPositionName = "vertPosition";
+
+        /**
+         * @type {String}
+         */
+        this.vertexShaderAttributeVertexNormalName = "vertNormal";
 
         /**
          * @type {String}
@@ -55,20 +60,15 @@ export class Mesh extends Component{
         /**
          * @type {Array<number>}
          */
-        this.normalVertices = new Array();
+        this.verticesNormal = new Array();
 
-        this.computeNormal(false);
+        this.computeFlatShadingNormals();
     }
 
-    computeNormal(smoothShading = true){
-
-        let trianglesNormal;
-        let verticesNormal;
+    computeFlatShadingNormals(){
+        const trianglesNormal = new Array();
 
         // compute triangle normals
-
-        trianglesNormal = new Array();
-
         for(let i = 0; i < this.vertices.length; i+= this.dimension * 3){
             const A = new Vector3(this.vertices[i + 0], this.vertices[i + 1], this.vertices[i + 2]);
             const B = new Vector3(this.vertices[i + 3], this.vertices[i + 4], this.vertices[i + 5]);
@@ -83,14 +83,6 @@ export class Mesh extends Component{
             let N = AB.cross(AC).normalized;
 
             // facing normal
-            /*let distanceCentroid = pmid.subed(centroid).magnitude;
-            let distanceNormal = pmid.added(N).scaled(distanceCentroid).subed(centroid).magnitude;
-
-            if(distanceCentroid < distanceNormal){
-                N = N.scaled(-1).normalized;
-            }*/
-
-
             if(pmid.subed(centroid).scalar(N) < 0){
                 N = N.scaled(-1).normalized;
             }
@@ -100,25 +92,28 @@ export class Mesh extends Component{
             }
         }
 
-        if(!smoothShading){
-            this.normalVertices = trianglesNormal;
-            return;
-        }
+        this.verticesNormal = trianglesNormal;
+    }
+
+    computeSmoothShadingNormals(){
+
+        this.computeFlatShadingNormals();
+        const verticesNormal = new Array();
+        const trianglesNormal = this.verticesNormal;
+
         // compute vertices normal   
-        verticesNormal = new Array();
-        
         for (let i = 0; i < this.vertices.length; i += this.dimension) {
             let vertex = new Vector3(
-                this.vertices[i], this.vertices[(i + 1) % this.vertices.length], this.vertices[(i + 2) % this.vertices.length]
+                this.vertices[i], this.vertices[i + 1], this.vertices[i + 2]
             );
 
-            let attachedTriangles = this.getAttachedTrianglesIndices(vertex);
+            let attachedTriangles = this.getAttachedTrianglesIndices(vertex, i);
 
-            let vertexNormal = new Vector3();
+            let vertexNormal = new Vector3(0, 0, 0);
 
             for (let j = 0; j < attachedTriangles.length; j += this.dimension){
                 let curentTriangleNormal = new Vector3(trianglesNormal[attachedTriangles[j]], trianglesNormal[attachedTriangles[j + 1]], trianglesNormal[attachedTriangles[j + 2]]);
-                vertexNormal = vertexNormal.added(curentTriangleNormal).normalized;
+                vertexNormal = vertexNormal.added(curentTriangleNormal);
             }
 
             vertexNormal = vertexNormal.normalized;
@@ -126,17 +121,17 @@ export class Mesh extends Component{
             verticesNormal.push(...[vertexNormal.x, vertexNormal.y, vertexNormal.z]);
         }
 
-        this.normalVertices = verticesNormal;
+        this.verticesNormal = verticesNormal;
     }
 
     /**
      * @param {Vector3} vertex 
      */
-    getAttachedTrianglesIndices(vertex){
+    getAttachedTrianglesIndices(vertex, index){
 
         let triangles = new Array();
 
-        for(let i = 0; i < this.vertices.length; i += this.dimension * 3 /** triangle */){
+        for(let i = index; i < this.vertices.length; i += this.dimension * 3 /** triangle */){
 
             // check if you have the same point in the current triangle
             let triangle = new Array();
@@ -151,8 +146,6 @@ export class Mesh extends Component{
                             i, i + 1, i + 2
                         ]
                     );
-
-                    break;
                 }
             }
         }

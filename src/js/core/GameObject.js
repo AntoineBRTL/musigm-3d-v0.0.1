@@ -156,17 +156,11 @@ export class GameObject{
      * @return {Material | Mesh | Light | DirectionLight }
      */
     getComponent(component){
-
-        let componentToReturn;
-
-        this.behaviors.forEach(function(comp){
-            if(comp.constructor.name == component.name){
-                componentToReturn = comp;
-                return;
+        for(let i = 0; i < this.behaviors.length; i++){
+            if(this.behaviors[i].constructor.name == component.name){
+                return this.behaviors[i];
             }
-        });
-
-        return componentToReturn;
+        }
     }
 
     /**
@@ -174,16 +168,13 @@ export class GameObject{
      * @param {Function} component 
      */
     hasComponent(component){
-
-        let has = false;
-
-        this.behaviors.forEach(function(comp){
-            if(comp.constructor.name == component.name){
-                has = true;
+        for(let i = 0; i < this.behaviors.length; i++){
+            if(this.behaviors[i].constructor.name == component.name){
+                return true;
             }
-        }, this);
+        }
 
-        return has;
+        return false;
     }
 
     /**

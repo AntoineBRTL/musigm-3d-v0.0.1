@@ -33,8 +33,8 @@ export const DEFAULT_OLD_FRAGMENT_SHADER_SOURCE = [
 export const DEFAULT_VERTEX_SHADER_SOURCE = 
 `precision mediump float;
 
-attribute vec3 coordinates;
-attribute vec3 coordinatesNormal;
+attribute vec3 vertPosition;
+attribute vec3 vertNormal;
 
 uniform mat4 mObject;
 uniform mat4 mView;
@@ -45,10 +45,10 @@ varying vec3 fragPosition;
 
 void main()
 {
-   fragNormal = vec3(mObject * vec4(coordinatesNormal, 1.0));
-   fragPosition = vec3(mObject * vec4(coordinates, 1.0));
+   fragNormal = vec3(mObject * vec4(vertNormal, 1.0));
+   fragPosition = vec3(mObject * vec4(vertPosition, 1.0));
 
-   gl_Position = mProj * mView * mObject * vec4(coordinates, 1.0);
+   gl_Position = mProj * mView * mObject * vec4(vertPosition, 1.0);
 }`;
 
 
