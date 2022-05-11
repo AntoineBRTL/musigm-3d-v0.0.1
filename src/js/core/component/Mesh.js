@@ -205,4 +205,8 @@ export class Mesh extends Component{
     useShader(vertexShaderSource){
         this.vertexShaderSource = vertexShaderSource;
     }
+
+    addShader(vertexShaderSource){
+        this.vertexShaderSource += vertexShaderSource;
+    }
 }

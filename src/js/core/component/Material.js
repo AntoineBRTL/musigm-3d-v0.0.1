@@ -71,4 +71,8 @@ export class Material extends Component {
     useShader(fragmentShaderSource){
         this.fragmentShaderSource = fragmentShaderSource;
     }
+
+    addShader(fragmentShaderSource){
+        this.fragmentShaderSource += fragmentShaderSource; 
+    }
 }
