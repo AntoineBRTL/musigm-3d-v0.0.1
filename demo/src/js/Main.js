@@ -5,11 +5,11 @@ import { DirectionLight } from "../../../src/js/core/component/DirectionLight.js
 import { Material } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Material.js";
 import { Mesh } from "../../../../musigm-3d-v0.0.1/src/js/core/component/Mesh.js";
 import { Light } from "../../../src/js/core/component/Light.js";
-import { DEFAULT_FRAGMENT_SHADER_SOURCE, DEFAULT_OLD_FRAGMENT_SHADER_SOURCE } from "../../../src/js/core/Constant.js";
+import { CUBE_MESH, DEFAULT_FRAGMENT_SHADER_SOURCE, DEFAULT_OLD_FRAGMENT_SHADER_SOURCE, PLANE_MESH, THEPOT_MESH } from "../../../src/js/core/Constant.js";
 import { Input } from "../../../../musigm-3d-v0.0.1/src/js/core/tool/Input.js";
 import { Vector3 } from "../../../src/js/core/math/Vector3.js";
 
-export class Main{
+export class DeprecatedMain{
     constructor(){
         // scene
         let scene = new Scene();
@@ -80,7 +80,6 @@ export class Main{
         scene.add(directionLight, cube, light);
 
         const speed = 0.1;
-
         function loop() {
 
             // rotate the cube
@@ -118,6 +117,55 @@ export class Main{
             requestAnimationFrame(loop.bind(this));
         }
         loop();
+    }
+}
+
+export class Main{
+    constructor(){
+        let scene = new Scene();
+
+        let camera = new Camera();
+        camera.position.z = -20.0;
+        camera.position.y = 10.0;
+
+        let object1 = new GameObject();
+        object1.scale.x = 1000.0;
+        object1.scale.z = 1000.0;
+
+        let cube = new GameObject();
+        cube.position.y = -2.0;
+
+        let light = new GameObject();
+
+        let mat = object1.addComponent(Material);
+        let mesh = object1.addComponent(Mesh);
+        cube.addComponent(Material);
+        cube.addComponent(Mesh);
+
+        light.addComponent(DirectionLight);
+
+        mesh.vertices = PLANE_MESH;
+        mesh.computeFlatShadingNormals();
+        // TODO: auto compute normals
+
+        scene.add(object1, cube, light);
+
+        let loopIndex = 0;
+
+        loop();
+        function loop(){
+
+            camera.render(scene);
+
+            cube.rotation.x -= Math.sin(loopIndex) * 10.0;
+            cube.rotation.y += Math.sin(loopIndex) * 10.0;
+
+            cube.position.y = Math.sin(loopIndex) * 2.0 - 10.0;
+
+            loopIndex += 0.05;
+
+            requestAnimationFrame(loop);
+        }
     }
 }
 

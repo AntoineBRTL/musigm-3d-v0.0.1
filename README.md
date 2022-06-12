@@ -82,6 +82,42 @@ new Main();
 ![alt text](./images/demo.gif)
 
 ### Patch Note ###
+--------------------------------------------------------------------------------------------------------------------------------
+#### 12/06/2022 ####
+Hey ! I come back 1 month after the last note.
+
+Sadly I did not work a lot on new things in this project during this time, however I've fixed a lot of bugs from lighting and 
+shitty normals ^^.
+
+![alt text](./images/patch06.PNG)
+
+I'm currently making a new system for shaders rendering, it's not completely done for now but I can show you how it will work !
+
+```javascript
+let object = new GameObject();
+let material = object.addComponent(Material);
+
+material.fragmentShaderSource; // there, you will find a lot of pre-made functions
+// so you just need to create a simple .fs file with your main() and add it like this : 
+material.useShader(`
+void main()
+{
+    vec3 result = vec3(1.0, 1.0, 1.0);
+
+    result = computeDirectionalLightColor(result);
+    result = computePointLightColor(result);
+    result = computeDepthColor(result);
+    
+    gl_FragColor = vec4(result, 1.0);
+}
+`);
+
+// something like that, of course that wont work for now
+// keep it at defaults for now :)
+```
+
+Let's finish this note with a .gif
+![alt text](./images/patch07.gif)
 
 --------------------------------------------------------------------------------------------------------------------------------
 

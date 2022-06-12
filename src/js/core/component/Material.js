@@ -16,6 +16,38 @@ export class Material extends Component {
          * @type {Array<Object>}
          */
         this.fragmentShaderUniforms = new Array();
+
+        /**
+         * @type {String}
+         */
+        this.shaderFooter = `
+        void main()
+        {
+            // TODO : automatisate lightColor
+            vec3 objectColor = vec3(gl_FragCoord.x / resolution.x, gl_FragCoord.y / resolution.y, 1.0);
+            vec3 result = vec3(1.0, 1.0, 1.0);
+            
+            if(numberOfDirectionalLights > 0){
+                for(int i = 0; i < 1; i++){
+                    result *= computeDirectionalLight(directionalLight[i]);
+                }
+            }
+
+            if(numberOfLights > 0){
+                for(int i = 0; i < 10; i++){
+                    vec3 computedLight = computeLight(light[i]);
+                    if(computedLight.x > 0.0 || computedLight.y > 0.0 || computedLight.z > 0.0){
+                        result += computedLight;
+                    }
+                    
+                }
+            }
+
+            result = computeDepthColor(result);
+            
+            gl_FragColor = vec4(result, 1.0);
+        }
+        `;
     }
 
     addFragmentAttribute(attribute, value, dimension = 3) {
@@ -69,6 +101,6 @@ export class Material extends Component {
     }
 
     useShader(fragmentShaderSource){
-        this.fragmentShaderSource = fragmentShaderSource;
+        this.shaderFooter = fragmentShaderSource;
     }
 }

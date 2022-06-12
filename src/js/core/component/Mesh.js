@@ -50,6 +50,11 @@ export class Mesh extends Component{
         /**
          * @type {String}
          */
+        this.vertexShaderUniformObjectRotationMatrixName = "mObjectRotation";
+
+        /**
+         * @type {String}
+         */
         this.vertexShaderUniformViewMatrixName = "mView";
 
         /**
@@ -62,10 +67,10 @@ export class Mesh extends Component{
          */
         this.verticesNormal = new Array();
 
-        this.computeFlatShadingNormals();
+        this.computeFlatShadingNormals(true);
     }
 
-    computeFlatShadingNormals(){
+    computeFlatShadingNormals(reverse = false){
         const trianglesNormal = new Array();
 
         // compute triangle normals
@@ -84,7 +89,7 @@ export class Mesh extends Component{
             N = N.normalized;
 
             // facing normal
-            if(pmid.subed(centroid).scalar(N) < 0){
+            if(/*pmid.subed(centroid).scalar(N) < 0*/reverse){
                 N = N.scaled(-1).normalized;
             }
 

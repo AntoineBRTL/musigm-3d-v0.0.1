@@ -122,6 +122,8 @@ export class GameObject{
      * @return {Material | Mesh | Light | DirectionLight }
      */
     addComponent(component){
+
+        // TODO: remove eval();
         const comp = eval("new " + component.name + "();");
         this.behaviors.push(comp);
 

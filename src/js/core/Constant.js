@@ -37,16 +37,20 @@ attribute vec3 vertPosition;
 attribute vec3 vertNormal;
 
 uniform mat4 mObject;
+uniform mat4 mObjectRotation;
+
 uniform mat4 mView;
 uniform mat4 mProj;
 
 varying vec3 fragNormal;
 varying vec3 fragPosition;
+varying vec3 camPosition;
 
 void main()
 {
-   fragNormal = vec3(mObject * vec4(vertNormal, 1.0));
+   fragNormal = vec3(mObjectRotation * vec4(vertNormal, 1.0));
    fragPosition = vec3(mObject * vec4(vertPosition, 1.0));
+   camPosition = vec3(mView * mProj * vec4(1.0, 1.0, 1.0, 1.0));
 
    gl_Position = mProj * mView * mObject * vec4(vertPosition, 1.0);
 }`;
@@ -80,11 +84,12 @@ uniform vec2 resolution;
 
 varying vec3 fragPosition;
 varying vec3 fragNormal;
+varying vec3 camPosition;
 
 vec3 computeDirectionalLight(DirectionalLight dirLight){
     vec3 ambient = dirLight.ambientStrength * dirLight.color;
-    // max() -> no reversed colors
-    vec3 diffuse = abs(max(dot(fragNormal, dirLight.direction), 0.0)) * dirLight.intensity * dirLight.color;
+
+    vec3 diffuse = abs(max(dot(fragNormal, -dirLight.direction), 0.0)) * dirLight.intensity * dirLight.color;
 
     return (ambient + diffuse);
 }
@@ -98,30 +103,16 @@ vec3 computeLight(Light light){
     return diffuse;
 }
 
-void main()
-{
-    // TODO : automatisate lightColor
-    vec3 objectColor = vec3(gl_FragCoord.x / resolution.x, gl_FragCoord.y / resolution.y, 1.0);
-    vec3 result = vec3(1.0, 1.0, 1.0);
-    
-    if(numberOfDirectionalLights > 0){
-        for(int i = 0; i < 1; i++){
-            result *= computeDirectionalLight(directionalLight[i]);
-        }
-    }
+vec3 computeDepthColor(vec3 color){
 
-    if(numberOfLights > 0){
-        for(int i = 0; i < 10; i++){
-            vec3 computedLight = computeLight(light[i]);
-            if(computedLight.x > 0.0 || computedLight.y > 0.0 || computedLight.z > 0.0){
-                result += computedLight;
-            }
-            
-        }
-    }
-    
-    gl_FragColor = vec4(result, 1.0);
-}`;
+    // TODO: get camera position
+    float t = distance(fragPosition, camPosition);
+    float lambda = exp(0.001 * t);
+
+    return lambda * color + (1.0 - lambda);
+}
+
+`;
 
 export const CUBE_MESH = [
     -1.0,-1.0,-1.0,
@@ -1891,4 +1882,13 @@ export const THEPOT_MESH = [
     0.650000, -1.200000, 0.000000,
     0.562400, -1.200000, 0.330300,
     0.458200, -1.255600, 0.269100 
-]
+];
+
+export const PLANE_MESH = [
+    -1.0, 0.0,  1.0,
+     1.0, 0.0, -1.0,
+    -1.0, 0.0, -1.0,
+    -1.0, 0.0,  1.0,
+     1.0, 0.0,  1.0,
+     1.0, 0.0, -1.0
+];

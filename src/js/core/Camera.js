@@ -140,6 +140,9 @@ export class Camera extends GameObject{
      * @param {Scene} scene
      */
     render(scene){
+
+        const startTime = performance.now();
+
         // clear the old frame
         this.clear();
 
@@ -169,6 +172,9 @@ export class Camera extends GameObject{
 
             // default uniform(s)
             this.fillShaderUniform(mesh.vertexShaderUniformObjectMatrixName, new Float32Array(gameObject.transform), 4, program);
+
+            // TODO : better system for matrices (ObjectRotationMatrix) 
+            this.fillShaderUniform(mesh.vertexShaderUniformObjectRotationMatrixName, new Float32Array(new Matrix4().identity().rotated(gameObject.rotation)), 4, program);
             this.fillShaderUniform(mesh.vertexShaderUniformViewMatrixName, new Float32Array(this.transform), 4, program);
             this.fillShaderUniform(mesh.vertexShaderUniformProjectionMatrixName, new Float32Array(this.projectionMatrix), 4, program);
 
@@ -218,6 +224,8 @@ export class Camera extends GameObject{
             this.gl.drawArrays(this.gl.TRIANGLES, 0, mesh.vertices.length / mesh.dimension /** Merci à mon frère Pierru-sama pour son aide sur le "/ mesh.dimension" :D */);
 
         }, this);
+
+        console.log(performance.now() - startTime + " ms");
     }
 
     /**
@@ -245,7 +253,7 @@ export class Camera extends GameObject{
     createProgram(material, mesh){
 
         const vertexShaderSource = mesh.vertexShaderSource;
-        const fragmentShaderSource = material.fragmentShaderSource;
+        const fragmentShaderSource = material.fragmentShaderSource + material.shaderFooter;
 
         const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
         this.gl.shaderSource(vertexShader, vertexShaderSource);
