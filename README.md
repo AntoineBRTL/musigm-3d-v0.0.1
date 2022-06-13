@@ -2,12 +2,12 @@
 
 ### What is this ? ####
 
-I'm a young programmer who is learning at school.
+I'm a young 16yo student who is learning at school.
 I had an idea: create my own game engine framework to create my games, so I can say the game is 100% from me hahaha.
 
 I'm glad I am able to show you my code.
 
-Musigm is an open-gl based library to create 3D games exactly like THREE.js, but it's mine so it's better ;P.
+Musigm is an open-gl based library to create 3D games, there will be web-gpu support in the future.
 
 ### How to use musigm-js ? ###
 Let's start doing our shit !
