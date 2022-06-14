@@ -1,21 +1,26 @@
 import { CUBE_MESH, DEFAULT_VERTEX_SHADER_SOURCE } from "../Constant.js";
 import { Vector3 } from "../math/Vector3.js";
 import { Component } from "./Component.js";
+import { Utils } from "../Utils.js";
 
 export class Mesh extends Component{
-    constructor(){
+    constructor(args){
 
         super();
+
+        if(!args){
+            args = {};
+        }
 
         /**
          * @type {Array<number>}
          */
-        this.vertices = CUBE_MESH;
+        this.vertices = CUBE_MESH || args.vertices;
 
         /**
          * @type {number}
          */
-        this.dimension = 3;
+        this.dimension = 3 || args.dimension;
 
         /**
          * @type {Array<Object>}
@@ -30,7 +35,7 @@ export class Mesh extends Component{
         /**
          * @type {String}
          */
-        this.vertexShaderSource = DEFAULT_VERTEX_SHADER_SOURCE;
+        this.vertexShaderSource = DEFAULT_VERTEX_SHADER_SOURCE || args.vertexShaderSource;
 
         /**
          * @type {String}
@@ -65,7 +70,7 @@ export class Mesh extends Component{
         /**
          * @type {Array<number>}
          */
-        this.verticesNormal = new Array();
+        this.verticesNormal = new Array() || args.verticesNormal;
 
         this.computeFlatShadingNormals(true);
     }
@@ -213,5 +218,44 @@ export class Mesh extends Component{
 
     addShader(vertexShaderSource){
         this.vertexShaderSource += vertexShaderSource;
+    }
+
+    /**
+     * Import a model
+     * @param {String} path 
+     * @param {Function} callback
+     */
+    static import(path, callback){
+        Utils.readFile(path, function(data){
+            if(path.split('.')[path.split('.').length -1] == "dae"){
+                let parser = new DOMParser();
+                let parsedXML = parser.parseFromString(data, 'text/xml').children[0];
+
+                let vertices = new Array();
+                let verticesNormal = new Array();
+
+                for(let i = 0; i < parsedXML.getElementsByTagName("mesh").length; i++) {
+
+                    let vert = parsedXML.getElementsByTagName("mesh")[i].children[0].children[0].innerHTML.split(" ");
+                    vert.pop();
+                    vert.shift();
+
+                    vertices.push(...vert);
+
+                    let vertNorm = parsedXML.getElementsByTagName("mesh")[i].children[1].children[0].innerHTML.split(" ");
+                    vertNorm.pop();
+                    vertNorm.shift();
+
+                    verticesNormal.push(...vertNorm);
+                }
+
+                let mesh = new Mesh();
+
+                mesh.vertices = vertices;
+                mesh.verticesNormal = verticesNormal;
+
+                callback(mesh);
+            }
+        });
     }
 }

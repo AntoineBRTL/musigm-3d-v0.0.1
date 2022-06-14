@@ -1,5 +1,5 @@
 import { DirectionLight } from "./component/DirectionLight.js";
-import { Light } from "./component/Light.js";
+import { PointLight } from "./component/PointLight.js";
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
 import { DEFAULT_OLD_FRAGMENT_SHADER_SOURCE } from "./Constant.js";
@@ -34,7 +34,7 @@ export class Camera extends GameObject{
         /**
          * @type {Array<number>}
          */
-        this.clearColor = [0.0, 0.0, 0.0, 1.0] || args.clearColor;
+        this.clearColor = new Vector3(0.0, 0.0, 0.0) || args.clearColor;
 
         /**
          * @type {Array<Object>}
@@ -45,6 +45,16 @@ export class Camera extends GameObject{
          * @type {number}
          */
         this.fov = 60 || args.fov;
+
+        /**
+         * @type {number}
+         */
+        this.near = 0.1 || args.near;
+
+        /**
+         * @type {number}
+         */
+        this.far = 10000.0 || args.far;
 
         /**
          * @type {Function}
@@ -70,8 +80,8 @@ export class Camera extends GameObject{
         return new Matrix4().perspective(
             this.fov * (Math.PI / 180),
             this.canvas.width / this.canvas.height,
-            0.1,
-            1000.0
+            this.near,
+            this.far
         );
     }
 
@@ -80,7 +90,7 @@ export class Camera extends GameObject{
      * @param {Function} callback 
      */
     lockCursor(callback){
-        window.addEventListener("click", function(e){
+        this.canvas.addEventListener("click", function(e){
             this.canvas.requestPointerLock();
             callback();
         }.bind(this));
@@ -131,7 +141,7 @@ export class Camera extends GameObject{
      * Clear the canvas
      */
     clear(){
-        this.gl.clearColor(...this.clearColor);
+        this.gl.clearColor(this.clearColor.x, this.clearColor.y, this.clearColor.z, 1.0);
         this.gl.clear(this.gl.DEPTH_BUFFER_BIT | this.gl.COLOR_BUFFER_BIT | this.gl.ACCUM_BUFFER_BIT);
     }
 
@@ -140,8 +150,6 @@ export class Camera extends GameObject{
      * @param {Scene} scene
      */
     render(scene){
-
-        const startTime = performance.now();
 
         // clear the old frame
         this.clear();
@@ -157,8 +165,39 @@ export class Camera extends GameObject{
                 return;
             }
 
+            // constants replacement
+            // prepare light shit
+            const directionalLightsNumber = scene.directionLights.length;
+            const pointLightsNumber = scene.pointLights.length;
+
+            let fragmentLignes = (material.fragmentShaderSource).split('\n');
+            fragmentLignes.forEach(function(line, index){
+                if(line.includes("<<")){
+                    if(line.includes('NUMBER_OF_DIRECTIONAL_LIGHT')){
+
+                        if(directionalLightsNumber > 0){
+                            fragmentLignes[index] = 'const int NUMBER_OF_DIRECTIONAL_LIGHT = ' + directionalLightsNumber + ';';
+                        }else{
+                            fragmentLignes[index] = 'const int NUMBER_OF_DIRECTIONAL_LIGHT = 1;';
+                        }
+                    }
+    
+                    if(line.includes('NUMBER_OF_POINT_LIGHT')){
+    
+                        if(pointLightsNumber > 0){
+                            fragmentLignes[index] = 'const int NUMBER_OF_POINT_LIGHT = ' + pointLightsNumber + ';';
+                        }else{
+                            fragmentLignes[index] = 'const int NUMBER_OF_POINT_LIGHT = 1;';
+                        }
+                    }
+                }
+            });
+
+            let fs = fragmentLignes.join('\n') + material.shaderFooter;
+            let vs = mesh.vertexShaderSource;
+
             // Web-gl program
-            const program = this.getProgram(material, mesh) || this.createProgram(material, mesh);
+            const program = this.getProgram(fs, vs) || this.createProgram(fs, vs);
             this.gl.useProgram(program);
 
             // fill vertex shader attributes & uniforms
@@ -172,7 +211,6 @@ export class Camera extends GameObject{
 
             // default uniform(s)
             this.fillShaderUniform(mesh.vertexShaderUniformObjectMatrixName, new Float32Array(gameObject.transform), 4, program);
-
             // TODO : better system for matrices (ObjectRotationMatrix) 
             this.fillShaderUniform(mesh.vertexShaderUniformObjectRotationMatrixName, new Float32Array(new Matrix4().identity().rotated(gameObject.rotation)), 4, program);
             this.fillShaderUniform(mesh.vertexShaderUniformViewMatrixName, new Float32Array(this.transform), 4, program);
@@ -189,33 +227,42 @@ export class Camera extends GameObject{
 
             // default uniform(s)
             this.fillShaderUniform("resolution", new Float32Array([this.canvas.width, this.canvas.height]), 2, program);
+            this.fillShaderUniform("material.color", new Float32Array([material.color.x, material.color.y, material.color.z]), 3, program);
 
             // default (lights)
-            const directionalLightsNumber = scene.directionLights.length;
-            this.fillShaderUniform("numberOfDirectionalLights", new Float32Array([directionalLightsNumber]), 1, program, true);
-            for(let i = 0; i < directionalLightsNumber; i++){
-                const directionalLightGameObject = scene.directionLights[i];
-                const down = directionalLightGameObject.up.scaled(-1);
-                const directionalLight = scene.directionLights[i].getComponent(DirectionLight);
-                this.fillShaderUniform("directionalLight[" + i + "].intensity", new Float32Array([directionalLight.intensity]), 1, program);
-                this.fillShaderUniform("directionalLight[" + i + "].color", new Float32Array(directionalLight.color), 3, program);
-                this.fillShaderUniform("directionalLight[" + i + "].ambientStrength", new Float32Array([directionalLight.ambientStrength]), 1, program);
-                this.fillShaderUniform("directionalLight[" + i + "].direction", new Float32Array([down.x, down.y, down.z]), 3, program);
-            }
+            if(directionalLightsNumber > 0){
+                this.fillShaderUniform("directionLightInScene", new Float32Array([1]), 1, program);
 
-            const lightsNumber = scene.lights.length;
-            this.fillShaderUniform("numberOfLights", new Float32Array([lightsNumber]), 1, program, true);
-            for(let i = 0; i < lightsNumber; i++){
-                const lightGameObject = scene.lights[i];
-                const light = scene.lights[i].getComponent(Light);
-                this.fillShaderUniform("light[" + i + "].intensity", new Float32Array([light.intensity]), 1, program);
-                this.fillShaderUniform("light[" + i + "].color", new Float32Array(light.color), 3, program);
-                this.fillShaderUniform("light[" + i + "].position", new Float32Array([lightGameObject.position.x, lightGameObject.position.y, lightGameObject.position.z]), 3, program);
-                this.fillShaderUniform("light[" + i + "].constant", new Float32Array([light.constent]), 1, program);
-                this.fillShaderUniform("light[" + i + "].linear", new Float32Array([light.linear]), 1, program);
-                this.fillShaderUniform("light[" + i + "].quadratic", new Float32Array([light.quadratic]), 1, program);
+                for(let i = 0; i < directionalLightsNumber; i++){
+                    const directionalLightGameObject = scene.directionLights[i];
+                    const down = directionalLightGameObject.up.scaled(-1);
+                    const directionalLight = scene.directionLights[i].getComponent(DirectionLight);
+                    this.fillShaderUniform("directionalLight[" + i + "].intensity", new Float32Array([directionalLight.intensity]), 1, program);
+                    this.fillShaderUniform("directionalLight[" + i + "].color", new Float32Array([directionalLight.color.x, directionalLight.color.y, directionalLight.color.z]), 3, program);
+                    this.fillShaderUniform("directionalLight[" + i + "].ambientStrength", new Float32Array([directionalLight.ambientStrength]), 1, program);
+                    this.fillShaderUniform("directionalLight[" + i + "].direction", new Float32Array([down.x, down.y, down.z]), 3, program);
+                }
+            }else{
+                this.fillShaderUniform("directionLightInScene", new Float32Array([0]), 1, program);
             }
-
+            
+            if(pointLightsNumber > 0){
+                this.fillShaderUniform("pointLightInScene", new Float32Array([1]), 1, program);
+                
+                for(let i = 0; i < pointLightsNumber; i++){
+                    const pointLightGameObject = scene.pointLights[i];
+                    const pointLight = scene.pointLights[i].getComponent(PointLight);
+                    this.fillShaderUniform("pointLight[" + i + "].intensity", new Float32Array([pointLight.intensity]), 1, program);
+                    this.fillShaderUniform("pointLight[" + i + "].color", new Float32Array([pointLight.color.x, pointLight.color.y, pointLight.color.z]), 3, program);
+                    this.fillShaderUniform("pointLight[" + i + "].position", new Float32Array([pointLightGameObject.position.x, pointLightGameObject.position.y, pointLightGameObject.position.z]), 3, program);
+                    this.fillShaderUniform("pointLight[" + i + "].constant", new Float32Array([pointLight.constent]), 1, program);
+                    this.fillShaderUniform("pointLight[" + i + "].linear", new Float32Array([pointLight.linear]), 1, program);
+                    this.fillShaderUniform("pointLight[" + i + "].quadratic", new Float32Array([pointLight.quadratic]), 1, program);
+                }
+            }else{
+                this.fillShaderUniform("pointLightInScene", new Float32Array([0]), 1, program);
+            }
+            
             material.fragmentShaderUniforms.forEach(function(element){
                 this.fillShaderUniform(element.uniform, element.value, element.dimension, program);
             }, this);
@@ -224,21 +271,19 @@ export class Camera extends GameObject{
             this.gl.drawArrays(this.gl.TRIANGLES, 0, mesh.vertices.length / mesh.dimension /** Merci à mon frère Pierru-sama pour son aide sur le "/ mesh.dimension" :D */);
 
         }, this);
-
-        console.log(performance.now() - startTime + " ms");
     }
 
     /**
      * Get a program for this material
-     * @param {Material} material 
-     * @param {Mesh} mesh  
+     * @param {String} fragmentShaderSource 
+     * @param {String} vertexShaderSource  
      */
-    getProgram(material, mesh) {
+    getProgram(fragmentShaderSource, vertexShaderSource) {
 
         let program;
 
         this.programMaterials.forEach(function(programMaterial){
-            if(programMaterial.material == material && programMaterial.mesh == mesh) {
+            if(programMaterial.fragmentShaderSource == fragmentShaderSource && programMaterial.vertexShaderSource == vertexShaderSource) {
                 program = programMaterial.program;
             }
         }, this);
@@ -247,13 +292,10 @@ export class Camera extends GameObject{
     }                                
     /**
      * Create a new Program
-     * @param {Material} material 
-     * @param {Mesh} mesh  
+     * @param {String} fragmentShaderSource 
+     * @param {String} vertexShaderSource   
      */
-    createProgram(material, mesh){
-
-        const vertexShaderSource = mesh.vertexShaderSource;
-        const fragmentShaderSource = material.fragmentShaderSource + material.shaderFooter;
+    createProgram(fragmentShaderSource, vertexShaderSource){
 
         const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
         this.gl.shaderSource(vertexShader, vertexShaderSource);
@@ -286,7 +328,7 @@ export class Camera extends GameObject{
         }
 
         // add the program to the program list
-        this.programMaterials.push({program: program, material: material, mesh: mesh});
+        this.programMaterials.push({program, fragmentShaderSource, vertexShaderSource});
 
         return program;
     }
@@ -334,6 +376,5 @@ export class Camera extends GameObject{
         if(dimension == 1){
             this.gl.uniform1iv(uniformLocation, value);
         }
-
     }
 }

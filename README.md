@@ -83,6 +83,38 @@ new Main();
 
 ### Patch Note ###
 --------------------------------------------------------------------------------------------------------------------------------
+#### 14/06/2022 ####
+Yo ! 
+New Shader system ! 
+
+just use : 
+
+```javascript
+let object = new GameObject();
+let material = object.addComponent(Material);
+
+material.fragmentShaderSource; // there, you will find a lot of pre-made functions
+// so you just need to create a simple .fs file with your main() and add it like this : 
+material.useShader(`
+void main() {
+    vec3 color = material.color;
+
+    color = computeLight(color);
+    color = computeDepthColor(color);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+`);
+
+```
+
+I'm now working on a system to import 3D models from your computer
+
+![alt text](./images/patch08.PNG)
+
+But it still need some work hahah
+
+--------------------------------------------------------------------------------------------------------------------------------
 #### 12/06/2022 ####
 Hey ! I come back 1 month after the last note.
 

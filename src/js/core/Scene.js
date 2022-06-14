@@ -13,7 +13,7 @@ export class Scene{
          * Light on the scene
          * @type {Array<GameObject>}
          */
-        this.lights = new Array();
+        this.pointLights = new Array();
 
         /**
          * Light on the scene

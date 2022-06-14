@@ -59,16 +59,26 @@ void main()
 export const DEFAULT_FRAGMENT_SHADER_SOURCE = 
 `precision mediump float;
 
+/// Material ///
+struct Material{
+    vec3 color;
+};
+
+/// Camera ///
+struct Camera{
+    vec3 position;
+    vec3 clearColor;
+};
+
+/// Lights ///
 struct DirectionalLight{
     float intensity;
     vec3 color;
     float ambientStrength;
     vec3 direction;
 };
-uniform int numberOfDirectionalLights;
-uniform DirectionalLight directionalLight[1];
 
-struct Light{
+struct PointLight{
     float intensity;
     vec3 color;
     vec3 position;
@@ -77,8 +87,16 @@ struct Light{
     float linear;
     float quadratic;
 };
-uniform int numberOfLights;
-uniform Light light[100];
+
+uniform Material material;
+
+const int NUMBER_OF_DIRECTIONAL_LIGHT = <<;
+uniform bool directionLightInScene;
+uniform DirectionalLight directionalLight[NUMBER_OF_DIRECTIONAL_LIGHT];
+
+const int NUMBER_OF_POINT_LIGHT = <<;
+uniform bool pointLightInScene;
+uniform PointLight pointLight[NUMBER_OF_POINT_LIGHT];
 
 uniform vec2 resolution;
 
@@ -86,28 +104,61 @@ varying vec3 fragPosition;
 varying vec3 fragNormal;
 varying vec3 camPosition;
 
-vec3 computeDirectionalLight(DirectionalLight dirLight){
-    vec3 ambient = dirLight.ambientStrength * dirLight.color;
+vec3 getDirectionalLightMultiplier(){
 
-    vec3 diffuse = abs(max(dot(fragNormal, -dirLight.direction), 0.0)) * dirLight.intensity * dirLight.color;
+    vec3 multiplier = vec3(0.0, 0.0, 0.0);
 
-    return (ambient + diffuse);
+    if(directionLightInScene){
+        for(int i = 0; i < NUMBER_OF_DIRECTIONAL_LIGHT; i++){
+
+            vec3 direction = vec3(directionalLight[i].direction.x, -directionalLight[i].direction.y, directionalLight[i].direction.z);
+
+            vec3 ambient = directionalLight[i].ambientStrength * directionalLight[i].color;
+            vec3 diffuse = abs(max(dot(fragNormal, direction), 0.0)) * directionalLight[i].intensity * directionalLight[i].color;
+    
+            multiplier += ambient + diffuse;
+        }
+    }
+    
+    return multiplier;
 }
 
-vec3 computeLight(Light light){
-    float distance = length(light.position - fragPosition);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
-    vec3 direction = normalize(light.position - fragPosition);
-    vec3 diffuse = abs(max(dot(fragNormal, direction), 0.0)) * light.intensity * light.color * attenuation;
+vec3 getPointLightMultiplier(){
+    vec3 multiplier = vec3(0.0, 0.0, 0.0);
 
-    return diffuse;
+    if(pointLightInScene){
+        for(int i = 0; i < NUMBER_OF_POINT_LIGHT; i++){
+
+            vec3 position = vec3(pointLight[i].position.x, -pointLight[i].position.y, pointLight[i].position.z);
+
+            float distance = length(position - fragPosition);
+            float attenuation = 1.0 / (pointLight[i].constant + pointLight[i].linear * distance + pointLight[i].quadratic * (distance * distance));    
+            vec3 direction = normalize(position - fragPosition);
+            vec3 diffuse = abs(max(dot(fragNormal, direction), 0.0)) * pointLight[i].intensity * pointLight[i].color * attenuation;
+    
+            multiplier += diffuse;
+        }
+    }
+    
+    return multiplier;
+}
+
+vec3 computeLight(vec3 color){
+
+    vec3 dirLightMult = getDirectionalLightMultiplier();
+    vec3 pointLightMult = getPointLightMultiplier();
+
+    return (dirLightMult + pointLightMult) * color;
 }
 
 vec3 computeDepthColor(vec3 color){
 
     // TODO: get camera position
-    float t = distance(fragPosition, camPosition);
-    float lambda = exp(0.001 * t);
+
+    vec3 camPos = vec3(camPosition.x, camPosition.y, camPosition.z);
+
+    float t = distance(fragPosition, camPos);
+    float lambda = exp(-0.002 * t);
 
     return lambda * color + (1.0 - lambda);
 }

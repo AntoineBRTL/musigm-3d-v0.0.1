@@ -6,7 +6,7 @@ import { Vector3 } from "./math/Vector3.js";
 import { Material } from "./component/Material.js";
 import { Mesh } from "./component/Mesh.js";
 import { Scene } from "./Scene.js";
-import { Light } from "./component/Light.js";
+import { PointLight } from "./component/PointLight.js";
 import { DirectionLight } from "./component/DirectionLight.js";
 
 export class GameObject{
@@ -70,8 +70,8 @@ export class GameObject{
                 scene.directionLights.push(this);
             }
 
-            if(behavior.constructor.name == Light.name){
-                scene.lights.push(this);
+            if(behavior.constructor.name == PointLight.name){
+                scene.pointLights.push(this);
             }
         }, this);
     }
@@ -119,7 +119,7 @@ export class GameObject{
 
     /**
      * @param {Function} component 
-     * @return {Material | Mesh | Light | DirectionLight }
+     * @return {Material | Mesh | PointLight | DirectionLight }
      */
     addComponent(component){
 
@@ -128,9 +128,9 @@ export class GameObject{
         this.behaviors.push(comp);
 
         // Specials comps TODO : automatisate
-        if(component == Light){
+        if(component == PointLight){
             this.scenesAttached.forEach(function(scene){
-                scene.lights.push(this);
+                scene.pointLights.push(this);
             }, this);
         }
 
@@ -155,7 +155,7 @@ export class GameObject{
     /**
      * Return a component to the game object
      * @param {Function} component 
-     * @return {Material | Mesh | Light | DirectionLight }
+     * @return {Material | Mesh | PointLight | DirectionLight }
      */
     getComponent(component){
         for(let i = 0; i < this.behaviors.length; i++){

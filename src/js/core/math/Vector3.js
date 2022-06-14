@@ -163,7 +163,7 @@ export class Vector3{
      * shortcut for : new Vector(0, 0, 1)
      * @returns {Vector3}
      */
-     static get forward() {
+    static get forward() {
         return new Vector3(0, 0, 1);
     }
 
@@ -181,5 +181,33 @@ export class Vector3{
      */
     static clone(vector) {
         return new Vector3(vector.x, vector.y, vector.z); 
+    }
+
+    /**
+     * red color
+     */
+    static get red(){
+        return new Vector3(1.0, 0.0, 0.0);
+    }
+
+    /**
+     * green color
+     */
+    static get green(){
+        return new Vector3(0.0, 1.0, 0.0);
+    }
+
+    /**
+     * blue color
+     */
+    static get blue(){
+        return new Vector3(0.0, 0.0, 1.0);
+    }
+
+    /**
+     * white color
+     */
+    static get white(){
+        return new Vector3(1.0, 1.0, 1.0);
     }
 }

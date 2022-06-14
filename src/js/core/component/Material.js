@@ -1,10 +1,14 @@
 import { DEFAULT_FRAGMENT_SHADER_SOURCE } from "../Constant.js";
+import { Vector3 } from "../math/Vector3.js";
 import { Component } from "./Component.js";
 
 export class Material extends Component {
     constructor(){
         super();
 
+        /**
+         * @type {String}
+         */
         this.fragmentShaderSource = DEFAULT_FRAGMENT_SHADER_SOURCE;
 
         /**
@@ -21,33 +25,17 @@ export class Material extends Component {
          * @type {String}
          */
         this.shaderFooter = `
-        void main()
-        {
-            // TODO : automatisate lightColor
-            vec3 objectColor = vec3(gl_FragCoord.x / resolution.x, gl_FragCoord.y / resolution.y, 1.0);
-            vec3 result = vec3(1.0, 1.0, 1.0);
+        void main() {
+            vec3 color = material.color;
+        
+            color = computeLight(color);
+            color = computeDepthColor(color);
             
-            if(numberOfDirectionalLights > 0){
-                for(int i = 0; i < 1; i++){
-                    result *= computeDirectionalLight(directionalLight[i]);
-                }
-            }
-
-            if(numberOfLights > 0){
-                for(int i = 0; i < 10; i++){
-                    vec3 computedLight = computeLight(light[i]);
-                    if(computedLight.x > 0.0 || computedLight.y > 0.0 || computedLight.z > 0.0){
-                        result += computedLight;
-                    }
-                    
-                }
-            }
-
-            result = computeDepthColor(result);
-            
-            gl_FragColor = vec4(result, 1.0);
+            gl_FragColor = vec4(color, 1.0);
         }
         `;
+
+        this.color = new Vector3(1.0, 1.0, 1.0);
     }
 
     addFragmentAttribute(attribute, value, dimension = 3) {
