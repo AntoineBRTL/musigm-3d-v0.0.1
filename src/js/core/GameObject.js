@@ -78,7 +78,7 @@ export class GameObject{
 
     /**
      * Transformation matrix
-     * @return {Matrix3} Transformation matrix
+     * @return {Matrix4} Transformation matrix
      */
     get transform() {
         const transformationMatrix = new Matrix4().translated(this.position).rotated(this.rotation).scaled(this.scale);
@@ -221,5 +221,12 @@ export class GameObject{
         });
 
         return gameObjects;
+    }
+
+    static generateDirectionLight(){
+        let directionLight = new GameObject();
+        directionLight.addComponent(DirectionLight);
+
+        return directionLight;
     }
 }

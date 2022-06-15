@@ -83,6 +83,22 @@ new Main();
 
 ### Patch Note ###
 --------------------------------------------------------------------------------------------------------------------------------
+#### 15/06/2022 ####
+Yesss! 
+You can now use .obj files.
+
+![alt text](./images/patch09.PNG)
+
+It's still a bit slow so it still needs some work, but it's there hehe !
+
+```javascript
+let path = "./path/in/your/computer";
+
+OBJLoader.load(path, function(mesh){
+    return mesh;
+});
+```
+--------------------------------------------------------------------------------------------------------------------------------
 #### 14/06/2022 ####
 Yo ! 
 New Shader system ! 

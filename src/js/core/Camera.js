@@ -67,7 +67,7 @@ export class Camera extends GameObject{
 
     /**
      * Transformation matrix
-     * @return {Matrix3} Transformation matrix
+     * @return {Matrix4} Transformation matrix
      */
     get transform() {
         return new Matrix4().scaled(this.scale).rotated(this.rotation).translated(this.position);
@@ -86,11 +86,11 @@ export class Camera extends GameObject{
     }
 
     /**
-     * lock the user cursor using the click event
+     * lock the user cursor using the mousedown event
      * @param {Function} callback 
      */
     lockCursor(callback){
-        this.canvas.addEventListener("click", function(e){
+        this.canvas.addEventListener("mousedown", function(e){
             this.canvas.requestPointerLock();
             callback();
         }.bind(this));
@@ -202,8 +202,8 @@ export class Camera extends GameObject{
 
             // fill vertex shader attributes & uniforms
             // default attribute(s)
-            this.fillShaderAttribute(mesh.vertexShaderAttributeVertexPositionName, new Float32Array(mesh.vertices), 3, program);
-            this.fillShaderAttribute(mesh.vertexShaderAttributeVertexNormalName, new Float32Array(mesh.verticesNormal), 3, program);
+            this.fillShaderAttribute(mesh.vertexShaderAttributeVertexPositionName, new Float32Array(mesh.verticesPositions), 3, program);
+            this.fillShaderAttribute(mesh.vertexShaderAttributeVertexNormalName, new Float32Array(mesh.verticesNormals), 3, program);
 
             mesh.vertexShaderAttributes.forEach(function(element){
                 this.fillShaderAttribute(element.attribute, element.value, element.dimension, program);
@@ -267,8 +267,17 @@ export class Camera extends GameObject{
                 this.fillShaderUniform(element.uniform, element.value, element.dimension, program);
             }, this);
 
-            // draw
-            this.gl.drawArrays(this.gl.TRIANGLES, 0, mesh.vertices.length / mesh.dimension /** Merci à mon frère Pierru-sama pour son aide sur le "/ mesh.dimension" :D */);
+            if(mesh.verticesIndex){
+
+                var indexBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+                this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.verticesIndex), this.gl.STATIC_DRAW);
+                // draw geometry lines by indices
+                this.gl.drawElements(this.gl.LINES, mesh.verticesIndex.length, this.gl.UNSIGNED_SHORT, indexBuffer);
+            }else{
+                // draw
+                this.gl.drawArrays(this.gl.TRIANGLES, 0, mesh.verticesPositions.length / mesh.dimension /** Merci à mon frère Pierru-sama pour son aide sur le "/ mesh.dimension" :D */);
+            }
 
         }, this);
     }
@@ -376,5 +385,43 @@ export class Camera extends GameObject{
         if(dimension == 1){
             this.gl.uniform1iv(uniformLocation, value);
         }
+    }
+}
+
+export class OrbitCamera extends Camera{
+    constructor(args){
+        super(args);
+
+        this.position.z = -10.0;
+
+        let down = false;
+
+        window.addEventListener("mousemove", function(event){
+            if(down){
+                this.rotation.y += event.movementX * 0.5;
+                this.rotation.x += event.movementY * 0.5;
+            }
+        }.bind(this));
+
+        window.addEventListener("mousedown", function(){
+            down = true;
+        });
+
+        window.addEventListener("mouseup", function(){
+            down = false;
+        });
+
+        window.addEventListener("wheel", function(event){
+            this.position.z += event.deltaY * -0.01
+        }.bind(this));
+    }
+
+    /**
+     * Transformation matrix
+     * @return {Matrix4} Transformation matrix
+     */
+    get transform() {
+        const transformationMatrix = new Matrix4().translated(this.position).rotated(this.rotation).scaled(this.scale);
+        return transformationMatrix;
     }
 }

@@ -15,7 +15,7 @@ export class Mesh extends Component{
         /**
          * @type {Array<number>}
          */
-        this.vertices = CUBE_MESH || args.vertices;
+        this.verticesPositions = CUBE_MESH || args.vertices;
 
         /**
          * @type {number}
@@ -70,7 +70,17 @@ export class Mesh extends Component{
         /**
          * @type {Array<number>}
          */
-        this.verticesNormal = new Array() || args.verticesNormal;
+        this.verticesNormals = new Array() || args.verticesNormal;
+
+        /**
+         * @type {Array<number>}
+         */
+        this.verticesIndex = args.verticesIndex;
+
+        /**
+         * @type {number}
+         */
+        this.verticesIndexCount = args.verticesIndexCount;
 
         this.computeFlatShadingNormals(true);
     }
@@ -79,10 +89,10 @@ export class Mesh extends Component{
         const trianglesNormal = new Array();
 
         // compute triangle normals
-        for(let i = 0; i < this.vertices.length; i+= this.dimension * 3){
-            const A = new Vector3(this.vertices[i + 0], this.vertices[i + 1], this.vertices[i + 2]);
-            const B = new Vector3(this.vertices[i + 3], this.vertices[i + 4], this.vertices[i + 5]);
-            const C = new Vector3(this.vertices[i + 6], this.vertices[i + 7], this.vertices[i + 8]);
+        for(let i = 0; i < this.verticesPositions.length; i+= this.dimension * 3){
+            const A = new Vector3(this.verticesPositions[i + 0], this.verticesPositions[i + 1], this.verticesPositions[i + 2]);
+            const B = new Vector3(this.verticesPositions[i + 3], this.verticesPositions[i + 4], this.verticesPositions[i + 5]);
+            const C = new Vector3(this.verticesPositions[i + 6], this.verticesPositions[i + 7], this.verticesPositions[i + 8]);
 
             const AB = new Vector3(B.x - A.x, B.y - A.y, B.z - A.z);
             const AC = new Vector3(C.x - A.x, C.y - A.y, C.z - A.z);
@@ -103,19 +113,19 @@ export class Mesh extends Component{
             }
         }
 
-        this.verticesNormal = trianglesNormal;
+        this.verticesNormals = trianglesNormal;
     }
 
     computeSmoothShadingNormals(){
 
         this.computeFlatShadingNormals();
         const verticesNormal = new Array();
-        const trianglesNormal = this.verticesNormal;
+        const trianglesNormal = this.verticesNormals;
 
         // compute vertices normal   
-        for (let i = 0; i < this.vertices.length; i += this.dimension) {
+        for (let i = 0; i < this.verticesPositions.length; i += this.dimension) {
             let vertex = new Vector3(
-                this.vertices[i], this.vertices[i + 1], this.vertices[i + 2]
+                this.verticesPositions[i], this.verticesPositions[i + 1], this.verticesPositions[i + 2]
             );
 
             let attachedTriangles = this.getAttachedTrianglesIndices(vertex, i);
@@ -132,7 +142,7 @@ export class Mesh extends Component{
             verticesNormal.push(...[vertexNormal.x, vertexNormal.y, vertexNormal.z]);
         }
 
-        this.verticesNormal = verticesNormal;
+        this.verticesNormals = verticesNormal;
     }
 
     /**
@@ -142,13 +152,13 @@ export class Mesh extends Component{
 
         let triangles = new Array();
 
-        for(let i = index; i < this.vertices.length; i += this.dimension * 3 /** triangle */){
+        for(let i = index; i < this.verticesPositions.length; i += this.dimension * 3 /** triangle */){
 
             // check if you have the same point in the current triangle
             let triangle = new Array();
-            triangle.push(new Vector3(this.vertices[i], this.vertices[i + 1], this.vertices[i + 2]));
-            triangle.push(new Vector3(this.vertices[i + 3], this.vertices[i + 4], this.vertices[i + 5]));
-            triangle.push(new Vector3(this.vertices[i + 6], this.vertices[i + 7], this.vertices[i + 8]));
+            triangle.push(new Vector3(this.verticesPositions[i], this.verticesPositions[i + 1], this.verticesPositions[i + 2]));
+            triangle.push(new Vector3(this.verticesPositions[i + 3], this.verticesPositions[i + 4], this.verticesPositions[i + 5]));
+            triangle.push(new Vector3(this.verticesPositions[i + 6], this.verticesPositions[i + 7], this.verticesPositions[i + 8]));
 
             for(let j = 0; j < 3; j++){
                 if(vertex.subed(triangle[j]).isZero()){
@@ -218,44 +228,5 @@ export class Mesh extends Component{
 
     addShader(vertexShaderSource){
         this.vertexShaderSource += vertexShaderSource;
-    }
-
-    /**
-     * Import a model
-     * @param {String} path 
-     * @param {Function} callback
-     */
-    static import(path, callback){
-        Utils.readFile(path, function(data){
-            if(path.split('.')[path.split('.').length -1] == "dae"){
-                let parser = new DOMParser();
-                let parsedXML = parser.parseFromString(data, 'text/xml').children[0];
-
-                let vertices = new Array();
-                let verticesNormal = new Array();
-
-                for(let i = 0; i < parsedXML.getElementsByTagName("mesh").length; i++) {
-
-                    let vert = parsedXML.getElementsByTagName("mesh")[i].children[0].children[0].innerHTML.split(" ");
-                    vert.pop();
-                    vert.shift();
-
-                    vertices.push(...vert);
-
-                    let vertNorm = parsedXML.getElementsByTagName("mesh")[i].children[1].children[0].innerHTML.split(" ");
-                    vertNorm.pop();
-                    vertNorm.shift();
-
-                    verticesNormal.push(...vertNorm);
-                }
-
-                let mesh = new Mesh();
-
-                mesh.vertices = vertices;
-                mesh.verticesNormal = verticesNormal;
-
-                callback(mesh);
-            }
-        });
     }
 }
